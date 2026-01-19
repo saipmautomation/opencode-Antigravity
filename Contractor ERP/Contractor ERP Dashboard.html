@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contractor ERP - Admin Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-buttons-bs5@3.2.6/css/buttons.bootstrap5.min.css">
+    
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --border-color: #dee2e6;
+            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            overflow-y: auto;
+            padding: 20px 0;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-brand h4 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .sidebar-brand p {
+            margin: 5px 0 0 0;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin: 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 999;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-color);
+            display: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            margin-top: 60px;
+            padding: 30px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-section {
+            margin-bottom: 30px;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+        .breadcrumb-item {
+            color: var(--secondary-color);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-top: 10px;
+        }
+
+        /* Cards */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .kpi-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .kpi-card.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .kpi-card.info {
+            border-left-color: var(--info-color);
+        }
+
+        .kpi-content h6 {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 5px 0 0 0;
+        }
+
+        .kpi-icon {
+            font-size: 2.5rem;
+            opacity: 0.2;
+        }
+
+        /* Tables */
+        .datatable-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dataTables_wrapper {
+            font-size: 0.9rem;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--dark-color);
+            padding: 12px;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0a58ca;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+        }
+
+        .btn-action {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            margin: 0 2px;
+        }
+
+        /* Forms */
+        .form-label {
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 8px;
+            border: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background-color: rgba(25, 135, 84, 0.2);
+            color: var(--success-color);
+        }
+
+        .badge-inactive {
+            background-color: rgba(108, 117, 125, 0.2);
+            color: var(--secondary-color);
+        }
+
+        .badge-pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+
+        .badge-completed {
+            background-color: rgba(23, 162, 184, 0.2);
+            color: #0c5460;
+        }
+
+        .badge-on-hold {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                width: 100%;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .header {
+                left: 0;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .kpi-card {
+                margin-bottom: 15px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .datatable-container {
+                overflow-x: auto;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .header, .btn, .dataTables_length, .dataTables_filter, .dataTables_paginate {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-top: 0;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--secondary-color);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h4><i class="bi bi-hammer"></i> ERP</h4>
+            <p>Contractor Manager</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#dashboard" onclick="navigateTo('dashboard')" class="nav-link active"><i class="bi bi-house-door"></i> Dashboard</a></li>
+            <li><a href="#projects" onclick="navigateTo('projects')" class="nav-link"><i class="bi bi-briefcase"></i> Projects</a></li>
+            <li><a href="#clients" onclick="navigateTo('clients')" class="nav-link"><i class="bi bi-people"></i> Clients</a></li>
+            <li><a href="#workers" onclick="navigateTo('workers')" class="nav-link"><i class="bi bi-person-badge"></i> Workers</a></li>
+            <li><a href="#materials" onclick="navigateTo('materials')" class="nav-link"><i class="bi bi-boxes"></i> Materials</a></li>
+            <li><a href="#invoices" onclick="navigateTo('invoices')" class="nav-link"><i class="bi bi-receipt"></i> Invoices</a></li>
+            <li><a href="#reports" onclick="navigateTo('reports')" class="nav-link"><i class="bi bi-graph-up"></i> Reports</a></li>
+            <li><a href="#settings" onclick="navigateTo('settings')" class="nav-link"><i class="bi bi-gear"></i> Settings</a></li>
+            <li style="margin-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1);"><a href="#" onclick="logout()" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <h5 style="margin: 0; color: var(--dark-color);">Dashboard</h5>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-light btn-sm"><i class="bi bi-bell"></i> <span class="badge badge-danger" style="font-size: 0.7rem;">3</span></button>
+            <div class="user-profile" onclick="openProfileModal()">
+                <div class="user-avatar">A</div>
+                <div>
+                    <div style="font-size: 0.9rem; font-weight: 500;">Admin User</div>
+                    <div style="font-size: 0.8rem; color: var(--secondary-color);">Administrator</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section class="page-section active" id="dashboard">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Dashboard</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">Dashboard Overview</h1>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <div class="kpi-card">
+                        <div class="kpi-content">
+                            <h6>Total Projects</h6>
+                            <p class="kpi-value" id="totalProjects">0</p>
+                        </div>
+                        <i class="bi bi-briefcase kpi-icon"></i>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="kpi-card success">
+                        <div class="kpi-content">
+                            <h6>Active Workers</h6>
+                            <p class="kpi-value" id="activeWorkers">0</p>
+                        </div>
+                        <i class="bi bi-people kpi-icon"></i>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="kpi-card warning">
+                        <div class="kpi-content">
+                            <h6>Total Revenue</h6>
+                            <p class="kpi-value" id="totalRevenue">₹0</p>
+                        </div>
+                        <i class="bi bi-graph-up kpi-icon"></i>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="kpi-card danger">
+                        <div class="kpi-content">
+                            <h6>Pending Invoices</h6>
+                            <p class="kpi-value" id="pendingInvoices">0</p>
+                        </div>
+                        <i class="bi bi-exclamation-circle kpi-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mt-30">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">Monthly Revenue Trend</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">Project Status Distribution</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-30">
+                <div class="card-header">Quick Actions</div>
+                <div class="card-body">
+                    <button class="btn btn-primary btn-sm" onclick="openAddProjectModal()"><i class="bi bi-plus"></i> New Project</button>
+                    <button class="btn btn-primary btn-sm" onclick="openAddClientModal()"><i class="bi bi-plus"></i> New Client</button>
+                    <button class="btn btn-primary btn-sm" onclick="openAddWorkerModal()"><i class="bi bi-plus"></i> New Worker</button>
+                    <button class="btn btn-primary btn-sm" onclick="openAddInvoiceModal()"><i class="bi bi-plus"></i> New Invoice</button>
+                </div>
+            </div>
+
+            <!-- Recent Activity Table -->
+            <div class="card mt-30">
+                <div class="card-header">Recent Activity</div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentActivityTable">
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="page-section" id="projects">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Projects</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">Projects Management</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Projects List</span>
+                    <button class="btn btn-primary btn-sm" onclick="openAddProjectModal()"><i class="bi bi-plus"></i> Add Project</button>
+                </div>
+                <div class="card-body datatable-container">
+                    <table id="projectsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Client</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Budget</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clients Section -->
+        <section class="page-section" id="clients">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Clients</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">Clients Management</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Clients List</span>
+                    <button class="btn btn-primary btn-sm" onclick="openAddClientModal()"><i class="bi bi-plus"></i> Add Client</button>
+                </div>
+                <div class="card-body datatable-container">
+                    <table id="clientsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Contact Person</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>City</th>
+                                <th>Total Projects</th>
+                                <th>Total Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workers Section -->
+        <section class="page-section" id="workers">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Workers</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">Workers Management</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Workers List</span>
+                    <button class="btn btn-primary btn-sm" onclick="openAddWorkerModal()"><i class="bi bi-plus"></i> Add Worker</button>
+                </div>
+                <div class="card-body datatable-container">
+                    <table id="workersTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Worker Name</th>
+                                <th>Specialization</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Daily Rate</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Materials Section -->
+        <section class="page-section" id="materials">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Materials</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">Materials & Inventory</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Materials List</span>
+                    <button class="btn btn-primary btn-sm" onclick="openAddMaterialModal()"><i class="bi bi-plus"></i> Add Material</button>
+                </div>
+                <div class="card-body datatable-container">
+                    <table id="materialsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Material Name</th>
+                                <th>Category</th>
+                                <th>Unit</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Value</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Invoices Section -->
+        <section class="page-section" id="invoices">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Invoices</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">Invoices Management</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Invoices List</span>
+                    <button class="btn btn-primary btn-sm" onclick="openAddInvoiceModal()"><i class="bi bi-plus"></i> New Invoice</button>
+                </div>
+                <div class="card-body datatable-container">
+                    <table id="invoicesTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Client</th>
+                                <th>Project</th>
+                                <th>Amount</th>
+                                <th>Issue Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section class="page-section" id="reports">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Reports</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">Analytics & Reports</h1>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">Client Revenue Breakdown</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="clientRevenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">Worker Allocation</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="workerAllocationChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-30">
+                <div class="card-header">Key Metrics</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6 style="color: var(--secondary-color); margin-bottom: 10px;">Average Project Value</h6>
+                            <h3 id="avgProjectValue">₹0</h3>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 style="color: var(--secondary-color); margin-bottom: 10px;">Project Completion Rate</h6>
+                            <h3 id="completionRate">0%</h3>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 style="color: var(--secondary-color); margin-bottom: 10px;">Average Daily Rate</h6>
+                            <h3 id="avgDailyRate">₹0</h3>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 style="color: var(--secondary-color); margin-bottom: 10px;">Most Used Material</h6>
+                            <h3 id="mostUsedMaterial">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section class="page-section" id="settings">
+            <div class="breadcrumb-section">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="navigateTo('dashboard')">Home</a></li>
+                        <li class="breadcrumb-item active">Settings</li>
+                    </ol>
+                </nav>
+                <h1 class="page-title">System Settings</h1>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">Account Settings</div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label required">First Name</label>
+                                        <input type="text" class="form-control" value="Admin" disabled>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label required">Last Name</label>
+                                        <input type="text" class="form-control" value="User" disabled>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label required">Email</label>
+                                    <input type="email" class="form-control" value="admin@example.com" disabled>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="editProfile()">Edit Profile</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card mt-30">
+                        <div class="card-header">Change Password</div>
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label required">Current Password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label required">New Password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label required">Confirm Password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="changePassword()">Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">System Preferences</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Language</label>
+                                <select class="form-select">
+                                    <option selected>English</option>
+                                    <option>Hindi</option>
+                                    <option>Marathi</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Currency</label>
+                                <select class="form-select">
+                                    <option selected>INR (₹)</option>
+                                    <option>USD ($)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Notification Preferences</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked>
+                                    <label class="form-check-label">Email Notifications</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked>
+                                    <label class="form-check-label">SMS Alerts</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add/Edit Project Modal -->
+    <div class="modal fade" id="projectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectModalTitle">Add New Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="projectForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label required">Project Name</label>
+                            <input type="text" class="form-control" id="projectName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Client</label>
+                            <select class="form-select" id="projectClient" required>
+                                <option value="">Select Client</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Start Date</label>
+                                <input type="date" class="form-control" id="projectStartDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">End Date</label>
+                                <input type="date" class="form-control" id="projectEndDate" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Status</label>
+                            <select class="form-select" id="projectStatus" required>
+                                <option value="">Select Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Completed">Completed</option>
+                                <option value="On Hold">On Hold</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Budget</label>
+                                <input type="number" class="form-control" id="projectBudget" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Progress (%)</label>
+                                <input type="number" class="form-control" id="projectProgress" min="0" max="100" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Client Modal -->
+    <div class="modal fade" id="clientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientModalTitle">Add New Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="clientForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label required">Client Name</label>
+                            <input type="text" class="form-control" id="clientName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Contact Person</label>
+                            <input type="text" class="form-control" id="clientContact" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Email</label>
+                            <input type="email" class="form-control" id="clientEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Phone</label>
+                            <input type="tel" class="form-control" id="clientPhone" placeholder="10-digit phone number" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">City</label>
+                            <select class="form-select" id="clientCity" required>
+                                <option value="">Select City</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Pune">Pune</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Chennai">Chennai</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Client</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Worker Modal -->
+    <div class="modal fade" id="workerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="workerModalTitle">Add New Worker</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="workerForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label required">Worker Name</label>
+                            <input type="text" class="form-control" id="workerName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Specialization</label>
+                            <select class="form-select" id="workerSpecialization" required>
+                                <option value="">Select Specialization</option>
+                                <option value="Mason">Mason</option>
+                                <option value="Carpenter">Carpenter</option>
+                                <option value="Electrician">Electrician</option>
+                                <option value="Plumber">Plumber</option>
+                                <option value="Painter">Painter</option>
+                                <option value="Welder">Welder</option>
+                                <option value="General Labor">General Labor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Phone</label>
+                            <input type="tel" class="form-control" id="workerPhone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Email</label>
+                            <input type="email" class="form-control" id="workerEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Daily Rate (₹)</label>
+                            <input type="number" class="form-control" id="workerRate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Status</label>
+                            <select class="form-select" id="workerStatus" required>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Worker</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Material Modal -->
+    <div class="modal fade" id="materialModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="materialModalTitle">Add New Material</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="materialForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label required">Material Name</label>
+                            <input type="text" class="form-control" id="materialName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Category</label>
+                            <select class="form-select" id="materialCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Cement">Cement</option>
+                                <option value="Steel">Steel</option>
+                                <option value="Timber">Timber</option>
+                                <option value="Paint">Paint</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Plumbing">Plumbing</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Unit</label>
+                            <select class="form-select" id="materialUnit" required>
+                                <option value="">Select Unit</option>
+                                <option value="Kg">Kg</option>
+                                <option value="Meter">Meter</option>
+                                <option value="Liter">Liter</option>
+                                <option value="Piece">Piece</option>
+                                <option value="Bag">Bag</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Quantity</label>
+                                <input type="number" class="form-control" id="materialQuantity" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Unit Price (₹)</label>
+                                <input type="number" class="form-control" id="materialUnitPrice" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Status</label>
+                            <select class="form-select" id="materialStatus" required>
+                                <option value="In Stock">In Stock</option>
+                                <option value="Low Stock">Low Stock</option>
+                                <option value="Out of Stock">Out of Stock</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Material</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Invoice Modal -->
+    <div class="modal fade" id="invoiceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="invoiceModalTitle">Create New Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="invoiceForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Client</label>
+                                <select class="form-select" id="invoiceClient" required>
+                                    <option value="">Select Client</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Project</label>
+                                <select class="form-select" id="invoiceProject" required>
+                                    <option value="">Select Project</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Issue Date</label>
+                                <input type="date" class="form-control" id="invoiceIssueDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Due Date</label>
+                                <input type="date" class="form-control" id="invoiceDueDate" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Amount (₹)</label>
+                            <input type="number" class="form-control" id="invoiceAmount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Status</label>
+                            <select class="form-select" id="invoiceStatus" required>
+                                <option value="Draft">Draft</option>
+                                <option value="Sent">Sent</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Overdue">Overdue</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="invoiceDescription" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div class="user-avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto;">A</div>
+                        <h5 style="margin-top: 15px;">Admin User</h5>
+                        <p style="color: var(--secondary-color);">Administrator</p>
+                    </div>
+                    <div class="mb-3">
+                        <label style="font-weight: 500;">Email</label>
+                        <p>admin@example.com</p>
+                    </div>
+                    <div class="mb-3">
+                        <label style="font-weight: 500;">Role</label>
+                        <p>Administrator</p>
+                    </div>
+                    <div class="mb-3">
+                        <label style="font-weight: 500;">Last Login</label>
+                        <p>Today, 10:30 AM</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="navigateTo('settings')">Edit Profile</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@3.2.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@3.2.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@3.2.6/js/buttons.print.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons-bs5@3.2.6/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.0/build/pdfmake.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.0/build/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        // ===== SAMPLE DATA =====
+        let appData = {
+            projects: [
+                { id: 1, name: 'Mumbai Metro Extension', client: 'Municipal Corp', startDate: '2024-01-15', endDate: '2025-12-31', status: 'Active', budget: 5000000, progress: 45 },
+                { id: 2, name: 'Commercial Complex', client: 'TechHub Pvt Ltd', startDate: '2024-03-01', endDate: '2025-06-30', status: 'Active', budget: 3500000, progress: 60 },
+                { id: 3, name: 'Residential Building', client: 'Sharma Builders', startDate: '2023-06-01', endDate: '2024-12-31', status: 'Completed', budget: 2000000, progress: 100 },
+                { id: 4, name: 'Road Construction', client: 'PWD Department', startDate: '2024-06-15', endDate: '2025-03-31', status: 'On Hold', budget: 1500000, progress: 25 },
+                { id: 5, name: 'Bridge Repair Project', client: 'Civic Authority', startDate: '2024-02-01', endDate: '2025-01-31', status: 'Active', budget: 2500000, progress: 70 },
+                { id: 6, name: 'Office Renovation', client: 'IT Solutions Corp', startDate: '2024-04-01', endDate: '2024-09-30', status: 'Completed', budget: 800000, progress: 100 },
+                { id: 7, name: 'Mall Interior Design', client: 'Retail Enterprises', startDate: '2024-05-15', endDate: '2025-05-15', status: 'Active', budget: 2200000, progress: 55 },
+                { id: 8, name: 'Factory Setup', client: 'Manufacturing Inc', startDate: '2024-07-01', endDate: '2025-03-31', status: 'Active', budget: 3000000, progress: 35 },
+                { id: 9, name: 'School Construction', client: 'Education Foundation', startDate: '2024-08-01', endDate: '2025-12-31', status: 'Active', budget: 1800000, progress: 30 },
+                { id: 10, name: 'Hospital Wing Extension', client: 'Medical Services Ltd', startDate: '2023-11-01', endDate: '2025-02-28', status: 'Active', budget: 4200000, progress: 85 }
+            ],
+            clients: [
+                { id: 1, name: 'Municipal Corp', contact: 'Rajesh Kumar', email: 'rajesh@municipal.com', phone: '9876543210', city: 'Mumbai', totalProjects: 2, totalAmount: 6500000 },
+                { id: 2, name: 'TechHub Pvt Ltd', contact: 'Priya Sharma', email: 'priya@techhub.com', phone: '9876543211', city: 'Mumbai', totalProjects: 2, totalAmount: 3500000 },
+                { id: 3, name: 'Sharma Builders', contact: 'Vikram Sharma', email: 'vikram@sharmabuilders.com', phone: '9876543212', city: 'Pune', totalProjects: 1, totalAmount: 2000000 },
+                { id: 4, name: 'PWD Department', contact: 'Amit Patel', email: 'amit@pwd.gov.in', phone: '9876543213', city: 'Mumbai', totalProjects: 1, totalAmount: 1500000 },
+                { id: 5, name: 'Civic Authority', contact: 'Snehal Desai', email: 'snehal@civic.com', phone: '9876543214', city: 'Mumbai', totalProjects: 1, totalAmount: 2500000 },
+                { id: 6, name: 'IT Solutions Corp', contact: 'Rahul Verma', email: 'rahul@itsolutions.com', phone: '9876543215', city: 'Bangalore', totalProjects: 1, totalAmount: 800000 },
+                { id: 7, name: 'Retail Enterprises', contact: 'Anjali Nair', email: 'anjali@retail.com', phone: '9876543216', city: 'Mumbai', totalProjects: 1, totalAmount: 2200000 },
+                { id: 8, name: 'Manufacturing Inc', contact: 'Sanjay Gupta', email: 'sanjay@manufacturing.com', phone: '9876543217', city: 'Delhi', totalProjects: 1, totalAmount: 3000000 },
+                { id: 9, name: 'Education Foundation', contact: 'Pooja Singh', email: 'pooja@education.org', phone: '9876543218', city: 'Pune', totalProjects: 1, totalAmount: 1800000 },
+                { id: 10, name: 'Medical Services Ltd', contact: 'Dr. Mohan Kumar', email: 'mohan@medical.com', phone: '9876543219', city: 'Chennai', totalProjects: 1, totalAmount: 4200000 }
+            ],
+            workers: [
+                { id: 1, name: 'Rajesh Kumar', specialization: 'Mason', phone: '9123456789', email: 'rajesh.mason@gmail.com', dailyRate: 800, status: 'Active' },
+                { id: 2, name: 'Vikram Singh', specialization: 'Carpenter', phone: '9123456790', email: 'vikram.carpenter@gmail.com', dailyRate: 900, status: 'Active' },
+                { id: 3, name: 'Amol Jadhav', specialization: 'Electrician', phone: '9123456791', email: 'amol.electrician@gmail.com', dailyRate: 1000, status: 'Active' },
+                { id: 4, name: 'Prakash Sharma', specialization: 'Plumber', phone: '9123456792', email: 'prakash.plumber@gmail.com', dailyRate: 850, status: 'Active' },
+                { id: 5, name: 'Suresh Patel', specialization: 'Painter', phone: '9123456793', email: 'suresh.painter@gmail.com', dailyRate: 600, status: 'Active' },
+                { id: 6, name: 'Mohan Reddy', specialization: 'Welder', phone: '9123456794', email: 'mohan.welder@gmail.com', dailyRate: 1100, status: 'Inactive' },
+                { id: 7, name: 'Arjun Kulkarni', specialization: 'General Labor', phone: '9123456795', email: 'arjun.labor@gmail.com', dailyRate: 500, status: 'Active' },
+                { id: 8, name: 'Ravi Desai', specialization: 'Mason', phone: '9123456796', email: 'ravi.mason@gmail.com', dailyRate: 800, status: 'Active' },
+                { id: 9, name: 'Deepak Nair', specialization: 'Electrician', phone: '9123456797', email: 'deepak.electrician@gmail.com', dailyRate: 1000, status: 'Active' },
+                { id: 10, name: 'Harish Gupta', specialization: 'Carpenter', phone: '9123456798', email: 'harish.carpenter@gmail.com', dailyRate: 900, status: 'Active' },
+                { id: 11, name: 'Kiran Verma', specialization: 'Plumber', phone: '9123456799', email: 'kiran.plumber@gmail.com', dailyRate: 850, status: 'Active' },
+                { id: 12, name: 'Nitin Rao', specialization: 'Painter', phone: '9123456800', email: 'nitin.painter@gmail.com', dailyRate: 600, status: 'Active' },
+                { id: 13, name: 'Sachin Iyer', specialization: 'Welder', phone: '9123456801', email: 'sachin.welder@gmail.com', dailyRate: 1100, status: 'Active' },
+                { id: 14, name: 'Varun Kumar', specialization: 'General Labor', phone: '9123456802', email: 'varun.labor@gmail.com', dailyRate: 500, status: 'Active' },
+                { id: 15, name: 'Sanjay Bansal', specialization: 'Mason', phone: '9123456803', email: 'sanjay.mason@gmail.com', dailyRate: 800, status: 'Active' },
+                { id: 16, name: 'Ashok Kumar', specialization: 'Electrician', phone: '9123456804', email: 'ashok.electrician@gmail.com', dailyRate: 1000, status: 'Active' },
+                { id: 17, name: 'Manoj Singh', specialization: 'Carpenter', phone: '9123456805', email: 'manoj.carpenter@gmail.com', dailyRate: 900, status: 'Active' },
+                { id: 18, name: 'Arun Verma', specialization: 'Plumber', phone: '9123456806', email: 'arun.plumber@gmail.com', dailyRate: 850, status: 'Active' },
+                { id: 19, name: 'Ramesh Patel', specialization: 'Painter', phone: '9123456807', email: 'ramesh.painter@gmail.com', dailyRate: 600, status: 'Active' },
+                { id: 20, name: 'Jitendra Yadav', specialization: 'Welder', phone: '9123456808', email: 'jitendra.welder@gmail.com', dailyRate: 1100, status: 'Inactive' }
+            ],
+            materials: [
+                { id: 1, name: 'Portland Cement', category: 'Cement', unit: 'Bag', quantity: 5000, unitPrice: 350, status: 'In Stock' },
+                { id: 2, name: 'Steel Rods (16mm)', category: 'Steel', unit: 'Kg', quantity: 2000, unitPrice: 60, status: 'In Stock' },
+                { id: 3, name: 'Timber - Teak', category: 'Timber', unit: 'Meter', quantity: 500, unitPrice: 400, status: 'Low Stock' },
+                { id: 4, name: 'Emulsion Paint', category: 'Paint', unit: 'Liter', quantity: 800, unitPrice: 150, status: 'In Stock' },
+                { id: 5, name: 'Electrical Wire (2.5mm)', category: 'Electrical', unit: 'Meter', quantity: 3000, unitPrice: 8, status: 'In Stock' },
+                { id: 6, name: 'PVC Pipes (32mm)', category: 'Plumbing', unit: 'Meter', quantity: 1000, unitPrice: 25, status: 'In Stock' },
+                { id: 7, name: 'Sand (River)', category: 'Cement', unit: 'Bag', quantity: 3000, unitPrice: 200, status: 'In Stock' },
+                { id: 8, name: 'Aggregates', category: 'Cement', unit: 'Bag', quantity: 2000, unitPrice: 180, status: 'In Stock' },
+                { id: 9, name: 'Tiles - Ceramic', category: 'Paint', unit: 'Piece', quantity: 5000, unitPrice: 50, status: 'In Stock' },
+                { id: 10, name: 'Sanitaryware - Toilet Seat', category: 'Plumbing', unit: 'Piece', quantity: 200, unitPrice: 3000, status: 'In Stock' },
+                { id: 11, name: 'Steel Mesh (6mm)', category: 'Steel', unit: 'Meter', quantity: 1500, unitPrice: 150, status: 'Low Stock' },
+                { id: 12, name: 'Glass Wool Insulation', category: 'Electrical', unit: 'Meter', quantity: 300, unitPrice: 100, status: 'In Stock' },
+                { id: 13, name: 'Gypsum Plaster', category: 'Paint', unit: 'Bag', quantity: 1000, unitPrice: 120, status: 'In Stock' },
+                { id: 14, name: 'Marble Tiles', category: 'Paint', unit: 'Meter', quantity: 200, unitPrice: 500, status: 'Low Stock' },
+                { id: 15, name: 'Plywood (12mm)', category: 'Timber', unit: 'Sheet', quantity: 400, unitPrice: 800, status: 'In Stock' },
+                { id: 16, name: 'Nails (3 inch)', category: 'Steel', unit: 'Kg', quantity: 500, unitPrice: 120, status: 'In Stock' },
+                { id: 17, name: 'Adhesive - Wall', category: 'Paint', unit: 'Liter', quantity: 300, unitPrice: 180, status: 'In Stock' },
+                { id: 18, name: 'Door Frames - Wooden', category: 'Timber', unit: 'Piece', quantity: 150, unitPrice: 1200, status: 'In Stock' },
+                { id: 19, name: 'Switches & Outlets', category: 'Electrical', unit: 'Piece', quantity: 1000, unitPrice: 80, status: 'In Stock' },
+                { id: 20, name: 'MCB Circuit Breakers', category: 'Electrical', unit: 'Piece', quantity: 500, unitPrice: 200, status: 'In Stock' }
+            ],
+            invoices: [
+                { id: 1, invoiceNumber: 'INV-001', client: 'Municipal Corp', project: 'Mumbai Metro Extension', amount: 500000, issueDate: '2024-12-01', dueDate: '2024-12-31', status: 'Paid' },
+                { id: 2, invoiceNumber: 'INV-002', client: 'TechHub Pvt Ltd', project: 'Commercial Complex', amount: 350000, issueDate: '2024-12-05', dueDate: '2025-01-05', status: 'Sent' },
+                { id: 3, invoiceNumber: 'INV-003', client: 'Sharma Builders', project: 'Residential Building', amount: 200000, issueDate: '2024-11-15', dueDate: '2024-12-15', status: 'Overdue' },
+                { id: 4, invoiceNumber: 'INV-004', client: 'PWD Department', project: 'Road Construction', amount: 150000, issueDate: '2024-12-10', dueDate: '2025-01-10', status: 'Draft' },
+                { id: 5, invoiceNumber: 'INV-005', client: 'Civic Authority', project: 'Bridge Repair Project', amount: 250000, issueDate: '2024-12-08', dueDate: '2025-01-08', status: 'Sent' },
+                { id: 6, invoiceNumber: 'INV-006', client: 'IT Solutions Corp', project: 'Office Renovation', amount: 80000, issueDate: '2024-10-01', dueDate: '2024-10-31', status: 'Paid' },
+                { id: 7, invoiceNumber: 'INV-007', client: 'Retail Enterprises', project: 'Mall Interior Design', amount: 220000, issueDate: '2024-12-12', dueDate: '2025-01-12', status: 'Sent' },
+                { id: 8, invoiceNumber: 'INV-008', client: 'Manufacturing Inc', project: 'Factory Setup', amount: 300000, issueDate: '2024-12-15', dueDate: '2025-01-15', status: 'Draft' },
+                { id: 9, invoiceNumber: 'INV-009', client: 'Education Foundation', project: 'School Construction', amount: 180000, issueDate: '2024-12-18', dueDate: '2025-01-18', status: 'Draft' },
+                { id: 10, invoiceNumber: 'INV-010', client: 'Medical Services Ltd', project: 'Hospital Wing Extension', amount: 420000, issueDate: '2024-11-20', dueDate: '2024-12-20', status: 'Overdue' },
+                { id: 11, invoiceNumber: 'INV-011', client: 'Municipal Corp', project: 'Mumbai Metro Extension', amount: 450000, issueDate: '2024-11-01', dueDate: '2024-11-30', status: 'Paid' },
+                { id: 12, invoiceNumber: 'INV-012', client: 'TechHub Pvt Ltd', project: 'Commercial Complex', amount: 300000, issueDate: '2024-11-10', dueDate: '2024-12-10', status: 'Paid' },
+                { id: 13, invoiceNumber: 'INV-013', client: 'Civic Authority', project: 'Bridge Repair Project', amount: 200000, issueDate: '2024-11-05', dueDate: '2024-12-05', status: 'Paid' },
+                { id: 14, invoiceNumber: 'INV-014', client: 'Retail Enterprises', project: 'Mall Interior Design', amount: 200000, issueDate: '2024-11-20', dueDate: '2024-12-20', status: 'Paid' },
+                { id: 15, invoiceNumber: 'INV-015', client: 'Manufacturing Inc', project: 'Factory Setup', amount: 280000, issueDate: '2024-10-15', dueDate: '2024-11-15', status: 'Paid' }
+            ]
+        };
+
+        let projectsTable, clientsTable, workersTable, materialsTable, invoicesTable;
+        let revenueChart, statusChart, clientRevenueChart, workerAllocationChart;
+        let editingId = null;
+        let editingTable = null;
+
+        // ===== INITIALIZATION =====
+        $(document).ready(function() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            $('#projectStartDate, #projectEndDate, #invoiceIssueDate, #invoiceDueDate').val(today);
+
+            // Populate dropdowns
+            populateDropdowns();
+
+            // Initialize tables
+            initializeTables();
+
+            // Initialize charts
+            initializeCharts();
+
+            // Load dashboard data
+            loadDashboardData();
+
+            // Form submissions
+            $('#projectForm').on('submit', handleProjectFormSubmit);
+            $('#clientForm').on('submit', handleClientFormSubmit);
+            $('#workerForm').on('submit', handleWorkerFormSubmit);
+            $('#materialForm').on('submit', handleMaterialFormSubmit);
+            $('#invoiceForm').on('submit', handleInvoiceFormSubmit);
+        });
+
+        // ===== NAVIGATION =====
+        function navigateTo(page) {
+            $('.page-section').removeClass('active');
+            $('#' + page).addClass('active');
+
+            $('.nav-link').removeClass('active');
+            $(`a[onclick="navigateTo('${page}')"]`).addClass('active');
+
+            // Update header title
+            const titles = {
+                'dashboard': 'Dashboard Overview',
+                'projects': 'Projects Management',
+                'clients': 'Clients Management',
+                'workers': 'Workers Management',
+                'materials': 'Materials & Inventory',
+                'invoices': 'Invoices Management',
+                'reports': 'Analytics & Reports',
+                'settings': 'System Settings'
+            };
+
+            $('header h5').text(titles[page]);
+
+            // Reload table data when navigating to tables
+            setTimeout(() => {
+                if (page === 'projects') projectsTable.ajax.reload();
+                else if (page === 'clients') clientsTable.ajax.reload();
+                else if (page === 'workers') workersTable.ajax.reload();
+                else if (page === 'materials') materialsTable.ajax.reload();
+                else if (page === 'invoices') invoicesTable.ajax.reload();
+                else if (page === 'reports') updateReports();
+                else if (page === 'dashboard') loadDashboardData();
+            }, 100);
+
+            // Hide sidebar on mobile
+            if (window.innerWidth < 768) {
+                $('.sidebar').removeClass('show');
+            }
+        }
+
+        function toggleSidebar() {
+            $('.sidebar').toggleClass('show');
+        }
+
+        // ===== DASHBOARD =====
+        function loadDashboardData() {
+            // KPI Cards
+            const activeProjects = appData.projects.filter(p => p.status === 'Active').length;
+            const totalProjects = appData.projects.length;
+            const activeWorkers = appData.workers.filter(w => w.status === 'Active').length;
+            const totalRevenue = appData.invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.amount, 0);
+            const pendingInvoices = appData.invoices.filter(i => i.status === 'Sent' || i.status === 'Overdue').length;
+
+            $('#totalProjects').text(totalProjects);
+            $('#activeWorkers').text(activeWorkers);
+            $('#totalRevenue').text('₹' + formatNumber(totalRevenue));
+            $('#pendingInvoices').text(pendingInvoices);
+
+            // Recent activity
+            loadRecentActivity();
+
+            // Update charts
+            updateDashboardCharts();
+        }
+
+        function loadRecentActivity() {
+            const activities = [];
+
+            // Sample recent activities
+            appData.invoices.slice(-5).forEach(inv => {
+                activities.push({
+                    type: 'Invoice',
+                    description: `Invoice ${inv.invoiceNumber} created for ${inv.client}`,
+                    date: inv.issueDate,
+                    status: inv.status
+                });
+            });
+
+            appData.projects.slice(-5).forEach(proj => {
+                activities.push({
+                    type: 'Project',
+                    description: `Project "${proj.name}" updated`,
+                    date: proj.startDate,
+                    status: proj.status
+                });
+            });
+
+            activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            let html = '';
+            activities.slice(0, 10).forEach(act => {
+                const statusBadge = getBadgeClass(act.status);
+                html += `
+                    <tr>
+                        <td><span class="badge" style="background-color: var(--primary-color);">${act.type}</span></td>
+                        <td>${act.description}</td>
+                        <td>${formatDate(act.date)}</td>
+                        <td><span class="badge ${statusBadge}">${act.status}</span></td>
+                    </tr>
+                `;
+            });
+
+            $('#recentActivityTable').html(html);
+        }
+
+        // ===== TABLES INITIALIZATION =====
+        function initializeTables() {
+            // Projects Table
+            projectsTable = $('#projectsTable').DataTable({
+                data: appData.projects,
+                columns: [
+                    { data: 'name' },
+                    { data: 'client' },
+                    { data: 'startDate', render: dt => formatDate(dt) },
+                    { data: 'endDate', render: dt => formatDate(dt) },
+                    { data: 'status', render: st => `<span class="badge ${getBadgeClass(st)}">${st}</span>` },
+                    { data: 'budget', render: bd => '₹' + formatNumber(bd) },
+                    { data: 'progress', render: pr => `<div class="progress" style="height: 20px;"><div class="progress-bar" style="width: ${pr}%">${pr}%</div></div>` },
+                    {
+                        data: null,
+                        render: (data, type, row) => `
+                            <button class="btn btn-sm btn-info btn-action" onclick="editProject(${row.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger btn-action" onclick="deleteProject(${row.id})"><i class="bi bi-trash"></i></button>
+                        `
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
+                paging: true,
+                pageLength: 10,
+                responsive: true
+            });
+
+            // Clients Table
+            clientsTable = $('#clientsTable').DataTable({
+                data: appData.clients,
+                columns: [
+                    { data: 'name' },
+                    { data: 'contact' },
+                    { data: 'email' },
+                    { data: 'phone' },
+                    { data: 'city' },
+                    { data: 'totalProjects' },
+                    { data: 'totalAmount', render: am => '₹' + formatNumber(am) },
+                    {
+                        data: null,
+                        render: (data, type, row) => `
+                            <button class="btn btn-sm btn-info btn-action" onclick="editClient(${row.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger btn-action" onclick="deleteClient(${row.id})"><i class="bi bi-trash"></i></button>
+                        `
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
+                paging: true,
+                pageLength: 10,
+                responsive: true
+            });
+
+            // Workers Table
+            workersTable = $('#workersTable').DataTable({
+                data: appData.workers,
+                columns: [
+                    { data: 'name' },
+                    { data: 'specialization' },
+                    { data: 'phone' },
+                    { data: 'email' },
+                    { data: 'dailyRate', render: dr => '₹' + formatNumber(dr) },
+                    { data: 'status', render: st => `<span class="badge ${st === 'Active' ? 'badge-active' : 'badge-inactive'}">${st}</span>` },
+                    {
+                        data: null,
+                        render: (data, type, row) => `
+                            <button class="btn btn-sm btn-info btn-action" onclick="editWorker(${row.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger btn-action" onclick="deleteWorker(${row.id})"><i class="bi bi-trash"></i></button>
+                        `
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
+                paging: true,
+                pageLength: 10,
+                responsive: true
+            });
+
+            // Materials Table
+            materialsTable = $('#materialsTable').DataTable({
+                data: appData.materials,
+                columns: [
+                    { data: 'name' },
+                    { data: 'category' },
+                    { data: 'unit' },
+                    { data: 'quantity' },
+                    { data: 'unitPrice', render: up => '₹' + formatNumber(up) },
+                    { data: null, render: (data, type, row) => '₹' + formatNumber(row.quantity * row.unitPrice) },
+                    { data: 'status', render: st => `<span class="badge ${getStatusBadge(st)}">${st}</span>` },
+                    {
+                        data: null,
+                        render: (data, type, row) => `
+                            <button class="btn btn-sm btn-info btn-action" onclick="editMaterial(${row.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger btn-action" onclick="deleteMaterial(${row.id})"><i class="bi bi-trash"></i></button>
+                        `
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
+                paging: true,
+                pageLength: 10,
+                responsive: true
+            });
+
+            // Invoices Table
+            invoicesTable = $('#invoicesTable').DataTable({
+                data: appData.invoices,
+                columns: [
+                    { data: 'invoiceNumber' },
+                    { data: 'client' },
+                    { data: 'project' },
+                    { data: 'amount', render: am => '₹' + formatNumber(am) },
+                    { data: 'issueDate', render: dt => formatDate(dt) },
+                    { data: 'dueDate', render: dt => formatDate(dt) },
+                    { data: 'status', render: st => `<span class="badge ${getBadgeClass(st)}">${st}</span>` },
+                    {
+                        data: null,
+                        render: (data, type, row) => `
+                            <button class="btn btn-sm btn-info btn-action" onclick="editInvoice(${row.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-warning btn-action" onclick="printInvoice(${row.id})"><i class="bi bi-printer"></i></button>
+                            <button class="btn btn-sm btn-danger btn-action" onclick="deleteInvoice(${row.id})"><i class="bi bi-trash"></i></button>
+                        `
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
+                paging: true,
+                pageLength: 10,
+                responsive: true
+            });
+        }
+
+        // ===== MODALS =====
+        function openAddProjectModal() {
+            editingId = null;
+            editingTable = 'projects';
+            $('#projectModalTitle').text('Add New Project');
+            $('#projectForm')[0].reset();
+            const today = new Date().toISOString().split('T')[0];
+            $('#projectStartDate').val(today);
+            $('#projectEndDate').val(today);
+            new bootstrap.Modal(document.getElementById('projectModal')).show();
+        }
+
+        function openAddClientModal() {
+            editingId = null;
+            editingTable = 'clients';
+            $('#clientModalTitle').text('Add New Client');
+            $('#clientForm')[0].reset();
+            new bootstrap.Modal(document.getElementById('clientModal')).show();
+        }
+
+        function openAddWorkerModal() {
+            editingId = null;
+            editingTable = 'workers';
+            $('#workerModalTitle').text('Add New Worker');
+            $('#workerForm')[0].reset();
+            new bootstrap.Modal(document.getElementById('workerModal')).show();
+        }
+
+        function openAddMaterialModal() {
+            editingId = null;
+            editingTable = 'materials';
+            $('#materialModalTitle').text('Add New Material');
+            $('#materialForm')[0].reset();
+            new bootstrap.Modal(document.getElementById('materialModal')).show();
+        }
+
+        function openAddInvoiceModal() {
+            editingId = null;
+            editingTable = 'invoices';
+            $('#invoiceModalTitle').text('Create New Invoice');
+            $('#invoiceForm')[0].reset();
+            const today = new Date().toISOString().split('T')[0];
+            $('#invoiceIssueDate').val(today);
+            $('#invoiceDueDate').val(today);
+            new bootstrap.Modal(document.getElementById('invoiceModal')).show();
+        }
+
+        function openProfileModal() {
+            new bootstrap.Modal(document.getElementById('profileModal')).show();
+        }
+
+        // ===== EDIT FUNCTIONS =====
+        function editProject(id) {
+            const project = appData.projects.find(p => p.id === id);
+            if (!project) return;
+
+            editingId = id;
+            editingTable = 'projects';
+            $('#projectModalTitle').text('Edit Project');
+            $('#projectName').val(project.name);
+            $('#projectClient').val(project.client);
+            $('#projectStartDate').val(project.startDate);
+            $('#projectEndDate').val(project.endDate);
+            $('#projectStatus').val(project.status);
+            $('#projectBudget').val(project.budget);
+            $('#projectProgress').val(project.progress);
+
+            new bootstrap.Modal(document.getElementById('projectModal')).show();
+        }
+
+        function editClient(id) {
+            const client = appData.clients.find(c => c.id === id);
+            if (!client) return;
+
+            editingId = id;
+            editingTable = 'clients';
+            $('#clientModalTitle').text('Edit Client');
+            $('#clientName').val(client.name);
+            $('#clientContact').val(client.contact);
+            $('#clientEmail').val(client.email);
+            $('#clientPhone').val(client.phone);
+            $('#clientCity').val(client.city);
+
+            new bootstrap.Modal(document.getElementById('clientModal')).show();
+        }
+
+        function editWorker(id) {
+            const worker = appData.workers.find(w => w.id === id);
+            if (!worker) return;
+
+            editingId = id;
+            editingTable = 'workers';
+            $('#workerModalTitle').text('Edit Worker');
+            $('#workerName').val(worker.name);
+            $('#workerSpecialization').val(worker.specialization);
+            $('#workerPhone').val(worker.phone);
+            $('#workerEmail').val(worker.email);
+            $('#workerRate').val(worker.dailyRate);
+            $('#workerStatus').val(worker.status);
+
+            new bootstrap.Modal(document.getElementById('workerModal')).show();
+        }
+
+        function editMaterial(id) {
+            const material = appData.materials.find(m => m.id === id);
+            if (!material) return;
+
+            editingId = id;
+            editingTable = 'materials';
+            $('#materialModalTitle').text('Edit Material');
+            $('#materialName').val(material.name);
+            $('#materialCategory').val(material.category);
+            $('#materialUnit').val(material.unit);
+            $('#materialQuantity').val(material.quantity);
+            $('#materialUnitPrice').val(material.unitPrice);
+            $('#materialStatus').val(material.status);
+
+            new bootstrap.Modal(document.getElementById('materialModal')).show();
+        }
+
+        function editInvoice(id) {
+            const invoice = appData.invoices.find(i => i.id === id);
+            if (!invoice) return;
+
+            editingId = id;
+            editingTable = 'invoices';
+            $('#invoiceModalTitle').text('Edit Invoice');
+            $('#invoiceClient').val(invoice.client);
+            $('#invoiceProject').val(invoice.project);
+            $('#invoiceIssueDate').val(invoice.issueDate);
+            $('#invoiceDueDate').val(invoice.dueDate);
+            $('#invoiceAmount').val(invoice.amount);
+            $('#invoiceStatus').val(invoice.status);
+
+            new bootstrap.Modal(document.getElementById('invoiceModal')).show();
+        }
+
+        // ===== DELETE FUNCTIONS =====
+        function deleteProject(id) {
+            Swal.fire({
+                title: 'Delete Project?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Delete'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    appData.projects = appData.projects.filter(p => p.id !== id);
+                    projectsTable.row($(`button[onclick="deleteProject(${id})"]`).closest('tr')).remove().draw();
+                    Swal.fire('Deleted!', 'Project deleted successfully.', 'success');
+                    loadDashboardData();
+                }
+            });
+        }
+
+        function deleteClient(id) {
+            Swal.fire({
+                title: 'Delete Client?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Delete'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    appData.clients = appData.clients.filter(c => c.id !== id);
+                    clientsTable.row($(`button[onclick="deleteClient(${id})"]`).closest('tr')).remove().draw();
+                    Swal.fire('Deleted!', 'Client deleted successfully.', 'success');
+                    loadDashboardData();
+                }
+            });
+        }
+
+        function deleteWorker(id) {
+            Swal.fire({
+                title: 'Delete Worker?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Delete'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    appData.workers = appData.workers.filter(w => w.id !== id);
+                    workersTable.row($(`button[onclick="deleteWorker(${id})"]`).closest('tr')).remove().draw();
+                    Swal.fire('Deleted!', 'Worker deleted successfully.', 'success');
+                    loadDashboardData();
+                }
+            });
+        }
+
+        function deleteMaterial(id) {
+            Swal.fire({
+                title: 'Delete Material?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Delete'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    appData.materials = appData.materials.filter(m => m.id !== id);
+                    materialsTable.row($(`button[onclick="deleteMaterial(${id})"]`).closest('tr')).remove().draw();
+                    Swal.fire('Deleted!', 'Material deleted successfully.', 'success');
+                    loadDashboardData();
+                }
+            });
+        }
+
+        function deleteInvoice(id) {
+            Swal.fire({
+                title: 'Delete Invoice?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Delete'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    appData.invoices = appData.invoices.filter(i => i.id !== id);
+                    invoicesTable.row($(`button[onclick="deleteInvoice(${id})"]`).closest('tr')).remove().draw();
+                    Swal.fire('Deleted!', 'Invoice deleted successfully.', 'success');
+                    loadDashboardData();
+                }
+            });
+        }
+
+        // ===== FORM SUBMISSIONS =====
+        function handleProjectFormSubmit(e) {
+            e.preventDefault();
+            const data = {
+                name: $('#projectName').val(),
+                client: $('#projectClient').val(),
+                startDate: $('#projectStartDate').val(),
+                endDate: $('#projectEndDate').val(),
+                status: $('#projectStatus').val(),
+                budget: parseFloat($('#projectBudget').val()),
+                progress: parseFloat($('#projectProgress').val())
+            };
+
+            if (editingId) {
+                const proj = appData.projects.find(p => p.id === editingId);
+                Object.assign(proj, data);
+                Swal.fire('Success!', 'Project updated successfully.', 'success');
+            } else {
+                const newId = Math.max(...appData.projects.map(p => p.id)) + 1;
+                appData.projects.push({ id: newId, ...data });
+                Swal.fire('Success!', 'Project added successfully.', 'success');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
+            projectsTable.clear().rows.add(appData.projects).draw();
+            loadDashboardData();
+        }
+
+        function handleClientFormSubmit(e) {
+            e.preventDefault();
+            const data = {
+                name: $('#clientName').val(),
+                contact: $('#clientContact').val(),
+                email: $('#clientEmail').val(),
+                phone: $('#clientPhone').val(),
+                city: $('#clientCity').val(),
+                totalProjects: editingId ? appData.clients.find(c => c.id === editingId).totalProjects : 0,
+                totalAmount: editingId ? appData.clients.find(c => c.id === editingId).totalAmount : 0
+            };
+
+            if (editingId) {
+                const client = appData.clients.find(c => c.id === editingId);
+                Object.assign(client, data);
+                Swal.fire('Success!', 'Client updated successfully.', 'success');
+            } else {
+                const newId = Math.max(...appData.clients.map(c => c.id)) + 1;
+                appData.clients.push({ id: newId, ...data });
+                Swal.fire('Success!', 'Client added successfully.', 'success');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('clientModal')).hide();
+            clientsTable.clear().rows.add(appData.clients).draw();
+            populateDropdowns();
+            loadDashboardData();
+        }
+
+        function handleWorkerFormSubmit(e) {
+            e.preventDefault();
+            const data = {
+                name: $('#workerName').val(),
+                specialization: $('#workerSpecialization').val(),
+                phone: $('#workerPhone').val(),
+                email: $('#workerEmail').val(),
+                dailyRate: parseFloat($('#workerRate').val()),
+                status: $('#workerStatus').val()
+            };
+
+            if (editingId) {
+                const worker = appData.workers.find(w => w.id === editingId);
+                Object.assign(worker, data);
+                Swal.fire('Success!', 'Worker updated successfully.', 'success');
+            } else {
+                const newId = Math.max(...appData.workers.map(w => w.id)) + 1;
+                appData.workers.push({ id: newId, ...data });
+                Swal.fire('Success!', 'Worker added successfully.', 'success');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('workerModal')).hide();
+            workersTable.clear().rows.add(appData.workers).draw();
+            loadDashboardData();
+        }
+
+        function handleMaterialFormSubmit(e) {
+            e.preventDefault();
+            const data = {
+                name: $('#materialName').val(),
+                category: $('#materialCategory').val(),
+                unit: $('#materialUnit').val(),
+                quantity: parseFloat($('#materialQuantity').val()),
+                unitPrice: parseFloat($('#materialUnitPrice').val()),
+                status: $('#materialStatus').val()
+            };
+
+            if (editingId) {
+                const material = appData.materials.find(m => m.id === editingId);
+                Object.assign(material, data);
+                Swal.fire('Success!', 'Material updated successfully.', 'success');
+            } else {
+                const newId = Math.max(...appData.materials.map(m => m.id)) + 1;
+                appData.materials.push({ id: newId, ...data });
+                Swal.fire('Success!', 'Material added successfully.', 'success');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('materialModal')).hide();
+            materialsTable.clear().rows.add(appData.materials).draw();
+            loadDashboardData();
+        }
+
+        function handleInvoiceFormSubmit(e) {
+            e.preventDefault();
+            const lastInvNumber = Math.max(...appData.invoices.map(i => parseInt(i.invoiceNumber.split('-')[1])));
+            const newInvNumber = 'INV-' + String(lastInvNumber + 1).padStart(3, '0');
+
+            const data = {
+                invoiceNumber: editingId ? appData.invoices.find(i => i.id === editingId).invoiceNumber : newInvNumber,
+                client: $('#invoiceClient').val(),
+                project: $('#invoiceProject').val(),
+                amount: parseFloat($('#invoiceAmount').val()),
+                issueDate: $('#invoiceIssueDate').val(),
+                dueDate: $('#invoiceDueDate').val(),
+                status: $('#invoiceStatus').val()
+            };
+
+            if (editingId) {
+                const invoice = appData.invoices.find(i => i.id === editingId);
+                Object.assign(invoice, data);
+                Swal.fire('Success!', 'Invoice updated successfully.', 'success');
+            } else {
+                const newId = Math.max(...appData.invoices.map(i => i.id)) + 1;
+                appData.invoices.push({ id: newId, ...data });
+                Swal.fire('Success!', 'Invoice created successfully.', 'success');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('invoiceModal')).hide();
+            invoicesTable.clear().rows.add(appData.invoices).draw();
+            loadDashboardData();
+        }
+
+        // ===== CHARTS =====
+        function initializeCharts() {
+            // Monthly Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: [450000, 520000, 480000, 650000, 720000, 580000, 680000, 750000, 620000, 810000, 920000, 850000],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: v => '₹' + formatNumber(v) } }
+                    }
+                }
+            });
+
+            // Project Status Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const statusData = {
+                'Active': appData.projects.filter(p => p.status === 'Active').length,
+                'Completed': appData.projects.filter(p => p.status === 'Completed').length,
+                'On Hold': appData.projects.filter(p => p.status === 'On Hold').length
+            };
+
+            statusChart = new Chart(statusCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(statusData),
+                    datasets: [{
+                        label: 'Projects',
+                        data: Object.values(statusData),
+                        backgroundColor: ['#0d6efd', '#198754', '#ffc107']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Client Revenue Chart
+            const clientRevenueCtx = document.getElementById('clientRevenueChart').getContext('2d');
+            const clientRevenue = {};
+            appData.invoices.forEach(inv => {
+                clientRevenue[inv.client] = (clientRevenue[inv.client] || 0) + inv.amount;
+            });
+
+            clientRevenueChart = new Chart(clientRevenueCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(clientRevenue),
+                    datasets: [{
+                        data: Object.values(clientRevenue),
+                        backgroundColor: ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6f42c1', '#fd7e14', '#20c997']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Worker Allocation Chart
+            const workerAllocationCtx = document.getElementById('workerAllocationChart').getContext('2d');
+            const workerAllocation = {};
+            appData.workers.forEach(w => {
+                workerAllocation[w.specialization] = (workerAllocation[w.specialization] || 0) + 1;
+            });
+
+            workerAllocationChart = new Chart(workerAllocationCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(workerAllocation),
+                    datasets: [{
+                        data: Object.values(workerAllocation),
+                        backgroundColor: ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6f42c1', '#fd7e14']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function updateDashboardCharts() {
+            // Update Revenue Chart
+            revenueChart.data.datasets[0].data = [450000, 520000, 480000, 650000, 720000, 580000, 680000, 750000, 620000, 810000, 920000, 850000];
+            revenueChart.update();
+
+            // Update Status Chart
+            const statusData = {
+                'Active': appData.projects.filter(p => p.status === 'Active').length,
+                'Completed': appData.projects.filter(p => p.status === 'Completed').length,
+                'On Hold': appData.projects.filter(p => p.status === 'On Hold').length
+            };
+            statusChart.data.datasets[0].data = Object.values(statusData);
+            statusChart.update();
+        }
+
+        // ===== REPORTS =====
+        function updateReports() {
+            // Calculate metrics
+            const avgProjectValue = appData.projects.reduce((sum, p) => sum + p.budget, 0) / appData.projects.length;
+            const completedProjects = appData.projects.filter(p => p.status === 'Completed').length;
+            const completionRate = (completedProjects / appData.projects.length) * 100;
+            const avgDailyRate = appData.workers.reduce((sum, w) => sum + w.dailyRate, 0) / appData.workers.length;
+            const materialCounts = {};
+            appData.materials.forEach(m => {
+                materialCounts[m.name] = (materialCounts[m.name] || 0) + m.quantity;
+            });
+            const mostUsedMaterial = Object.keys(materialCounts).reduce((a, b) => materialCounts[a] > materialCounts[b] ? a : b);
+
+            $('#avgProjectValue').text('₹' + formatNumber(avgProjectValue));
+            $('#completionRate').text(completionRate.toFixed(1) + '%');
+            $('#avgDailyRate').text('₹' + formatNumber(avgDailyRate));
+            $('#mostUsedMaterial').text(mostUsedMaterial);
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function populateDropdowns() {
+            // Clients dropdown
+            const clientOptions = appData.clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            $('#projectClient, #invoiceClient').html('<option value="">Select Client</option>' + clientOptions);
+
+            // Projects dropdown
+            const projectOptions = appData.projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+            $('#invoiceProject').html('<option value="">Select Project</option>' + projectOptions);
+        }
+
+        function formatDate(date) {
+            if (!date) return '';
+            const d = new Date(date);
+            return d.toLocaleDateString('en-IN');
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function getBadgeClass(status) {
+            const map = {
+                'Active': 'badge-active',
+                'Completed': 'badge-completed',
+                'On Hold': 'badge-on-hold',
+                'Paid': 'badge-completed',
+                'Sent': 'badge-pending',
+                'Draft': 'badge-inactive',
+                'Overdue': 'badge-on-hold',
+                'Inactive': 'badge-inactive'
+            };
+            return map[status] || 'badge-secondary';
+        }
+
+        function getStatusBadge(status) {
+            if (status === 'In Stock') return 'badge-active';
+            if (status === 'Low Stock') return 'badge-pending';
+            return 'badge-on-hold';
+        }
+
+        // ===== ADDITIONAL FUNCTIONS =====
+        function printInvoice(id) {
+            const invoice = appData.invoices.find(i => i.id === id);
+            if (!invoice) return;
+
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write(`
+                <html><head><title>Invoice ${invoice.invoiceNumber}</title></head><body>
+                <h2>Invoice ${invoice.invoiceNumber}</h2>
+                <p><strong>Client:</strong> ${invoice.client}</p>
+                <p><strong>Project:</strong> ${invoice.project}</p>
+                <p><strong>Amount:</strong> ₹${formatNumber(invoice.amount)}</p>
+                <p><strong>Issue Date:</strong> ${formatDate(invoice.issueDate)}</p>
+                <p><strong>Due Date:</strong> ${formatDate(invoice.dueDate)}</p>
+                <p><strong>Status:</strong> ${invoice.status}</p>
+                </body></html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function editProfile() {
+            Swal.fire({
+                title: 'Edit Profile',
+                html: `
+                    <input type="text" id="fname" class="swal2-input" placeholder="First Name" value="Admin">
+                    <input type="text" id="lname" class="swal2-input" placeholder="Last Name" value="User">
+                    <input type="email" id="email" class="swal2-input" placeholder="Email" value="admin@example.com">
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Update'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Swal.fire('Success!', 'Profile updated.', 'success');
+                }
+            });
+        }
+
+        function changePassword() {
+            Swal.fire({
+                title: 'Change Password',
+                html: `
+                    <input type="password" id="current" class="swal2-input" placeholder="Current Password">
+                    <input type="password" id="newpass" class="swal2-input" placeholder="New Password">
+                    <input type="password" id="confirm" class="swal2-input" placeholder="Confirm Password">
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Update'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Swal.fire('Success!', 'Password changed.', 'success');
+                }
+            });
+        }
+
+        function logout() {
+            Swal.fire({
+                title: 'Logout?',
+                text: 'Are you sure you want to logout?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Logout'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Swal.fire('Logged out!', 'You have been logged out.', 'success').then(() => {
+                        window.location.href = 'login.html';
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

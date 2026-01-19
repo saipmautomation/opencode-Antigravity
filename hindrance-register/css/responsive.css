@@ -1,0 +1,894 @@
+/* =========================================
+   Hindrance Register - Responsive Styles
+   Mobile-First Bootstrap 5 Grid System
+   ========================================= */
+
+/* =========================================
+   Extra Small Devices (< 576px)
+   Mobile phones in portrait mode
+   ========================================= */
+@media (max-width: 575.98px) {
+    /* Typography Adjustments */
+    h1 { font-size: 22px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+    h4 { font-size: 16px; }
+    
+    .page-title {
+        font-size: 20px;
+    }
+    
+    /* Login Screen */
+    .login-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .login-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .login-logo i {
+        font-size: 28px;
+    }
+    
+    .login-title {
+        font-size: 20px;
+    }
+    
+    /* Navigation */
+    .navbar-brand span {
+        font-size: 16px;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 12px 16px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Main Content */
+    .main-content {
+        padding-bottom: 100px;
+    }
+    
+    .container-fluid {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    
+    /* Stat Cards */
+    .stat-card .card-body {
+        padding: 12px;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .stat-icon i {
+        font-size: 20px;
+    }
+    
+    .stat-value {
+        font-size: 24px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
+    }
+    
+    /* Quick Stats */
+    .quick-stat-card h4 {
+        font-size: 18px;
+    }
+    
+    .quick-stat-card h6 {
+        font-size: 12px;
+    }
+    
+    /* Cards */
+    .card-header {
+        padding: 12px;
+    }
+    
+    .card-body {
+        padding: 12px;
+    }
+    
+    .card-title {
+        font-size: 14px;
+    }
+    
+    /* Charts */
+    .card-header .btn-group {
+        display: none;
+    }
+    
+    /* Tables */
+    .table thead th {
+        font-size: 11px;
+        padding: 8px;
+    }
+    
+    .table tbody td {
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    /* Hide less important columns on mobile */
+    .table th:nth-child(4),
+    .table td:nth-child(4),
+    .table th:nth-child(7),
+    .table td:nth-child(7),
+    .table th:nth-child(11),
+    .table td:nth-child(11),
+    .table th:nth-child(12),
+    .table td:nth-child(12) {
+        display: none;
+    }
+    
+    /* Action buttons compact */
+    .btn-action {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    /* Forms */
+    .form-label {
+        font-size: 12px;
+    }
+    
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 10px;
+    }
+    
+    /* Modal */
+    .modal-dialog {
+        margin: 0;
+    }
+    
+    .modal-content {
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    
+    .modal-header {
+        padding: 12px 16px;
+    }
+    
+    .modal-title {
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 16px;
+    }
+    
+    .modal-footer {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .modal-footer .btn {
+        flex: 1;
+        min-width: 100px;
+    }
+    
+    /* Buttons */
+    .btn {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+    
+    .btn-lg {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+    
+    /* Button groups stack vertically */
+    .d-flex.gap-2 {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .d-flex.gap-2 .btn {
+        width: 100%;
+    }
+    
+    /* Page header adjustments */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    /* Filter panel */
+    #filtersPanel .row > div {
+        margin-bottom: 8px;
+    }
+    
+    /* Report cards */
+    .report-type-card {
+        margin-bottom: 8px;
+    }
+    
+    .report-icon {
+        font-size: 36px;
+    }
+    
+    /* FAB position adjustment */
+    .fab {
+        bottom: 90px;
+        right: 16px;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .fab i {
+        font-size: 20px;
+    }
+    
+    /* Mobile navigation */
+    .mobile-nav {
+        padding: 6px 0;
+    }
+    
+    .mobile-nav-item {
+        padding: 6px 12px;
+    }
+    
+    .mobile-nav-item i {
+        font-size: 18px;
+    }
+    
+    .mobile-nav-item span {
+        font-size: 9px;
+    }
+    
+    /* List items */
+    .list-group-item {
+        padding: 10px 12px;
+    }
+    
+    .hindrance-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .hindrance-list-item .badge {
+        margin-top: 8px;
+    }
+    
+    /* DataTables adjustments */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        text-align: left !important;
+        margin-bottom: 12px;
+    }
+    
+    .dataTables_wrapper .dataTables_length select {
+        width: 60px;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        width: 150px !important;
+    }
+    
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: center !important;
+        margin-top: 12px;
+    }
+    
+    /* Export buttons */
+    .card-header .btn-group {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .card-header .btn-group .btn {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    /* Details grid */
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Report content */
+    .report-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .report-kpi-value {
+        font-size: 22px;
+    }
+}
+
+/* =========================================
+   Small Devices (576px - 767px)
+   Mobile phones in landscape, small tablets
+   ========================================= */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    /* Typography */
+    .page-title {
+        font-size: 22px;
+    }
+    
+    /* Stat Cards - 3 per row */
+    .stat-card .card-body {
+        padding: 14px;
+    }
+    
+    .stat-value {
+        font-size: 26px;
+    }
+    
+    /* Cards */
+    .card-body {
+        padding: 16px;
+    }
+    
+    /* Tables - hide some columns */
+    .table th:nth-child(7),
+    .table td:nth-child(7),
+    .table th:nth-child(11),
+    .table td:nth-child(11) {
+        display: none;
+    }
+    
+    /* Modal */
+    .modal-dialog {
+        margin: 16px;
+        max-width: calc(100% - 32px);
+    }
+    
+    .modal-content {
+        border-radius: var(--radius-lg);
+        min-height: auto;
+    }
+    
+    /* Forms side by side */
+    .row.g-3 > .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    /* FAB */
+    .fab {
+        bottom: 85px;
+        right: 20px;
+    }
+    
+    /* Report KPIs */
+    .report-kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* =========================================
+   Medium Devices (768px - 991px)
+   Tablets in portrait mode
+   ========================================= */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Navigation */
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--primary-color);
+        padding: 16px;
+        box-shadow: var(--shadow-md);
+    }
+    
+    /* Main Content */
+    .main-content {
+        padding-bottom: 80px;
+    }
+    
+    /* Stat Cards - 3 per row */
+    .col-xl-2 {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+    
+    /* Charts - full width on tablet */
+    .col-lg-8,
+    .col-lg-4,
+    .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 16px;
+    }
+    
+    /* Quick Stats - 2 per row */
+    .quick-stat-card {
+        margin-bottom: 16px;
+    }
+    
+    /* Tables - horizontal scroll */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Modal */
+    .modal-xl {
+        max-width: 90%;
+    }
+    
+    /* Settings - single column */
+    #pageSettings .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    /* Report cards - 2 per row */
+    .report-type-card {
+        margin-bottom: 16px;
+    }
+    
+    /* Hide mobile nav on tablets in landscape */
+    .mobile-nav {
+        display: flex;
+    }
+}
+
+/* =========================================
+   Large Devices (992px - 1199px)
+   Tablets in landscape, small laptops
+   ========================================= */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    /* Main Content - no bottom padding */
+    .main-content {
+        padding-bottom: 0;
+    }
+    
+    /* Stat Cards */
+    .stat-value {
+        font-size: 26px;
+    }
+    
+    /* Charts */
+    .col-lg-8 {
+        flex: 0 0 60%;
+        max-width: 60%;
+    }
+    
+    .col-lg-4 {
+        flex: 0 0 40%;
+        max-width: 40%;
+    }
+    
+    /* Modal */
+    .modal-xl {
+        max-width: 900px;
+    }
+}
+
+/* =========================================
+   Extra Large Devices (1200px - 1399px)
+   Desktops, large laptops
+   ========================================= */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    /* Container max width */
+    .container-fluid {
+        max-width: 1320px;
+        margin: 0 auto;
+    }
+    
+    /* Stat Cards - all in one row */
+    .col-xl-2 {
+        flex: 0 0 16.666%;
+        max-width: 16.666%;
+    }
+}
+
+/* =========================================
+   Extra Extra Large Devices (>= 1400px)
+   Large desktops, high-resolution displays
+   ========================================= */
+@media (min-width: 1400px) {
+    /* Container max width */
+    .container-fluid {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+    
+    /* Typography */
+    .page-title {
+        font-size: 28px;
+    }
+    
+    /* Stat Cards */
+    .stat-value {
+        font-size: 32px;
+    }
+    
+    /* Cards */
+    .card-body {
+        padding: 20px;
+    }
+    
+    /* Tables */
+    .table thead th,
+    .table tbody td {
+        padding: 16px;
+    }
+    
+    /* Modal */
+    .modal-xl {
+        max-width: 1140px;
+    }
+}
+
+/* =========================================
+   High DPI / Retina Displays
+   ========================================= */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Sharper borders */
+    .card,
+    .form-control,
+    .form-select,
+    .btn {
+        border-width: 0.5px;
+    }
+    
+    /* Thinner table borders */
+    .table td,
+    .table th {
+        border-width: 0.5px;
+    }
+}
+
+/* =========================================
+   Landscape Orientation Adjustments
+   ========================================= */
+@media (orientation: landscape) and (max-height: 500px) {
+    /* Compact login */
+    .login-screen {
+        padding: 16px;
+    }
+    
+    .login-card {
+        padding: 20px;
+    }
+    
+    .login-logo {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 12px;
+    }
+    
+    .login-logo i {
+        font-size: 24px;
+    }
+    
+    .login-title {
+        font-size: 18px;
+    }
+    
+    /* Compact modal */
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    /* Compact FAB */
+    .fab {
+        width: 44px;
+        height: 44px;
+        bottom: 70px;
+    }
+}
+
+/* =========================================
+   Touch Device Optimizations
+   ========================================= */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .btn-sm {
+        min-height: 36px;
+        min-width: 36px;
+    }
+    
+    .btn-action {
+        width: 36px;
+        height: 36px;
+    }
+    
+    /* Form elements */
+    .form-control,
+    .form-select {
+        min-height: 44px;
+    }
+    
+    /* Checkbox/Radio */
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* List items */
+    .list-group-item {
+        padding: 14px 16px;
+    }
+    
+    /* Nav items */
+    .nav-link {
+        padding: 12px 16px !important;
+    }
+    
+    /* Remove hover effects */
+    .card:hover {
+        transform: none;
+    }
+    
+    .stat-card:hover {
+        transform: none;
+    }
+    
+    .report-type-card:hover {
+        transform: none;
+    }
+    
+    /* Show attachment remove button always */
+    .attachment-preview .remove-attachment {
+        opacity: 1;
+    }
+}
+
+/* =========================================
+   Reduced Motion Preference
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .page-section.active {
+        animation: none;
+    }
+    
+    .loading-spinner {
+        animation: none;
+        border-top-color: transparent;
+    }
+    
+    .skeleton {
+        animation: none;
+        background: var(--bg-tertiary);
+    }
+}
+
+/* =========================================
+   Dark Mode Responsive Adjustments
+   ========================================= */
+@media (prefers-color-scheme: dark) {
+    /* Auto dark mode for users who prefer it */
+    :root:not([data-theme="light"]) {
+        --bg-primary: #1A1A2E;
+        --bg-secondary: #16213E;
+        --bg-tertiary: #0F3460;
+        --text-primary: #EAEAEA;
+        --text-secondary: #B0B0B0;
+        --border-color: #2A2A4A;
+    }
+}
+
+/* =========================================
+   Print Responsive Adjustments
+   ========================================= */
+@media print {
+    /* Reset colors for print */
+    * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    /* Page margins */
+    @page {
+        margin: 1cm;
+    }
+    
+    /* Full width containers */
+    .container-fluid {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    /* Hide non-essential elements */
+    .btn,
+    .navbar,
+    .mobile-nav,
+    .fab,
+    .modal-footer,
+    #filtersPanel,
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Show all table columns */
+    .table th,
+    .table td {
+        display: table-cell !important;
+    }
+    
+    /* Page breaks */
+    .card {
+        break-inside: avoid;
+    }
+    
+    h2, h3 {
+        break-after: avoid;
+    }
+    
+    /* Chart sizing for print */
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* =========================================
+   Specific Component Responsive Fixes
+   ========================================= */
+
+/* DataTables Responsive */
+@media (max-width: 767.98px) {
+    .dataTables_wrapper {
+        overflow-x: auto;
+    }
+    
+    .dataTables_wrapper .row {
+        flex-direction: column;
+    }
+    
+    .dataTables_wrapper .row > div {
+        width: 100% !important;
+        text-align: center !important;
+        margin-bottom: 10px;
+    }
+    
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control::before {
+        margin-right: 8px;
+    }
+}
+
+/* Chart.js Responsive */
+@media (max-width: 575.98px) {
+    #chartTimeline,
+    #chartStatusDistribution,
+    #chartWorkPhase,
+    #chartResponsibility {
+        max-height: 200px !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+    #chartTimeline {
+        max-height: 250px !important;
+    }
+    
+    #chartStatusDistribution,
+    #chartWorkPhase,
+    #chartResponsibility {
+        max-height: 220px !important;
+    }
+}
+
+/* Filter Panel Responsive */
+@media (max-width: 991.98px) {
+    #filtersPanel .col-lg-3,
+    #filtersPanel .col-lg-4 {
+        margin-bottom: 12px;
+    }
+}
+
+/* Settings Page Responsive */
+@media (max-width: 991.98px) {
+    #pageSettings .col-lg-6 {
+        margin-bottom: 16px;
+    }
+    
+    #usersTable {
+        font-size: 12px;
+    }
+    
+    #usersTable th,
+    #usersTable td {
+        padding: 8px;
+    }
+}
+
+/* Report Page Responsive */
+@media (max-width: 767.98px) {
+    .report-header {
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .report-header .project-name {
+        font-size: 16px;
+    }
+    
+    .report-header .report-title {
+        font-size: 20px;
+    }
+    
+    .report-section {
+        margin-bottom: 20px;
+    }
+    
+    .report-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .report-kpi-item {
+        padding: 12px;
+    }
+    
+    .report-kpi-value {
+        font-size: 20px;
+    }
+}
+
+/* View Details Modal Responsive */
+@media (max-width: 575.98px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .timeline-item {
+        padding-left: 20px;
+    }
+    
+    #existingAttachments .col-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Hindrance Form Modal Responsive */
+@media (max-width: 575.98px) {
+    #hindranceModal .card-header {
+        padding: 10px 12px;
+    }
+    
+    #hindranceModal .card-header h6 {
+        font-size: 13px;
+    }
+    
+    #hindranceModal .form-check-inline {
+        display: block;
+        margin-bottom: 8px;
+    }
+    
+    #attachmentPreview .col-4,
+    #existingAttachments .col-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}

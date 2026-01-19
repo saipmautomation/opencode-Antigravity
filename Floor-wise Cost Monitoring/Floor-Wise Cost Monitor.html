@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor-Wise Cost Monitoring - Construction Management</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2C7A7B;
+            --success-color: #22C55E;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --gray-color: #6B7280;
+            --light-bg: #F9FAFB;
+            --border-color: #E5E7EB;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: #1F2937;
+            overflow-x: hidden;
+        }
+        
+        /* Navbar Styling */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1e5a5a 100%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .sidebar .nav-link {
+            color: #6B7280;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar .nav-link:hover {
+            color: var(--primary-color);
+            background-color: var(--light-bg);
+            border-left-color: var(--primary-color);
+        }
+        
+        .sidebar .nav-link.active {
+            color: var(--primary-color);
+            background-color: var(--light-bg);
+            border-left-color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        /* Main Container */
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+        }
+        
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        /* Module Sections */
+        .module-section {
+            display: none;
+        }
+        
+        .module-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .dashboard-card.primary-card {
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .dashboard-card.success-card {
+            border-top: 4px solid var(--success-color);
+        }
+        
+        .dashboard-card.warning-card {
+            border-top: 4px solid var(--warning-color);
+        }
+        
+        .dashboard-card.danger-card {
+            border-top: 4px solid var(--danger-color);
+        }
+        
+        /* KPI Cards */
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+        
+        .kpi-label {
+            font-size: 0.875rem;
+            color: var(--gray-color);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .kpi-trend {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .kpi-trend.up {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success-color);
+        }
+        
+        .kpi-trend.down {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+        
+        /* Variance Status Badge */
+        .variance-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .variance-badge.good {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: var(--success-color);
+        }
+        
+        .variance-badge.warning {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: var(--warning-color);
+        }
+        
+        .variance-badge.critical {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger-color);
+        }
+        
+        /* Progress Bar */
+        .progress {
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), #1e5a5a);
+            height: 100%;
+        }
+        
+        /* DataTable Customization */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.25rem 0.5rem;
+            margin: 0 2px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white !important;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: var(--light-bg);
+        }
+        
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.375rem 0.75rem;
+            margin-left: 0.5rem;
+        }
+        
+        .dataTables_wrapper .dataTables_length select {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.375rem 0.75rem;
+        }
+        
+        table.dataTable tbody tr:hover {
+            background-color: var(--light-bg);
+        }
+        
+        table.dataTable tbody tr.selected {
+            background-color: rgba(44, 122, 123, 0.1);
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5a5a;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #16a34a;
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d97706;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Forms */
+        .form-control, .form-select {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.625rem 0.875rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(44, 122, 123, 0.25);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #1F2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-container-lg {
+            height: 400px;
+        }
+        
+        /* Alerts */
+        .alert-container {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background-color: rgba(34, 197, 94, 0.1);
+            border-left-color: var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-left-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .alert-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3B82F6;
+            color: #3B82F6;
+        }
+        
+        /* Modal Customization */
+        .modal-content {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--light-bg);
+        }
+        
+        .modal-title {
+            font-weight: 600;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .navbar {
+                padding: 0.5rem 1rem !important;
+            }
+            
+            .dashboard-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .kpi-value {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+        
+        /* Utility Classes */
+        .text-muted {
+            color: var(--gray-color);
+        }
+        
+        .text-primary {
+            color: var(--primary-color);
+        }
+        
+        .text-success {
+            color: var(--success-color);
+        }
+        
+        .text-warning {
+            color: var(--warning-color);
+        }
+        
+        .text-danger {
+            color: var(--danger-color);
+        }
+        
+        .badge-pill {
+            border-radius: 20px;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .icon-lg {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        
+        .currency {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(44, 122, 123, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(44, 122, 123, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(44, 122, 123, 0.4);
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-color);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="javascript:void(0)">
+                <i class="bi bi-building"></i> Floor-Wise Cost Monitor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">Welcome, <strong>Project Manager</strong></span>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-link" onclick="showExportOptions()">
+                            <i class="bi bi-download"></i> Export
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-link" onclick="showImportModal()">
+                            <i class="bi bi-upload"></i> Import
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-link" onclick="showSettings()">
+                            <i class="bi bi-gear"></i> Settings
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="content-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" style="width: 250px;">
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="javascript:void(0)" onclick="switchModule('dashboard')">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="switchModule('floorTracking')">
+                    <i class="bi bi-table"></i> Floor Tracking
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="switchModule('floorAnalysis')">
+                    <i class="bi bi-graph-up"></i> Floor Analysis
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="switchModule('budgetMgmt')">
+                    <i class="bi bi-calculator"></i> Budget Management
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="switchModule('reports')">
+                    <i class="bi bi-file-earmark-pdf"></i> Reports
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="switchModule('dataManagement')">
+                    <i class="bi bi-cloud-upload"></i> Data Management
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="content flex-grow-1">
+            <!-- DASHBOARD MODULE -->
+            <div id="dashboard" class="module-section active">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="bi bi-speedometer2"></i> Project Dashboard</h1>
+                    <button class="btn btn-primary" onclick="refreshDashboard()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+                
+                <!-- Project Summary Card -->
+                <div class="dashboard-card primary-card">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Project Budget</div>
+                                <div class="kpi-value currency" id="totalBudget">₹0.00L</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-color);">Total Allocated</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Total Spent</div>
+                                <div class="kpi-value currency" id="totalSpent">₹0.00L</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-color);">Actual Expenditure</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Remaining</div>
+                                <div class="kpi-value currency text-success" id="remainingBudget">₹0.00L</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-color);">Available Funds</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Utilization</div>
+                                <div class="kpi-value" id="utilization">0%</div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" id="utilizationBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Key Performance Indicators -->
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Cost Performance Index</div>
+                                <div class="kpi-value" id="cpiValue">1.00</div>
+                                <div class="kpi-trend up"><i class="bi bi-graph-up"></i> Performance Good</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-color); margin-top: 0.5rem;">Earned Value / Actual Cost</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Schedule Performance</div>
+                                <div class="kpi-value" id="spiValue">0.95</div>
+                                <div class="kpi-trend down"><i class="bi bi-graph-down"></i> Slightly Behind</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-color); margin-top: 0.5rem;">Earned Value / Planned Value</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Projected Final Cost</div>
+                                <div class="kpi-value currency" id="eacValue">₹0.00L</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-color); margin-top: 1rem;">Estimate at Completion</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Cost Trend</div>
+                                <div class="kpi-value" id="trendValue">↗ Ascending</div>
+                                <div class="kpi-trend warning"><i class="bi bi-exclamation-triangle"></i> Spending Accelerating</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-color); margin-top: 0.5rem;">Month-over-Month</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Row -->
+                <div class="row mt-4">
+                    <div class="col-lg-8">
+                        <div class="dashboard-card">
+                            <h5 class="mb-3"><i class="bi bi-graph-up"></i> Monthly Burn Rate Trend</h5>
+                            <div class="chart-container">
+                                <canvas id="burnRateChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="dashboard-card">
+                            <h5 class="mb-3"><i class="bi bi-pie-chart"></i> Cost by Category</h5>
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Top Floors by Variance -->
+                <div class="dashboard-card">
+                    <h5 class="mb-3"><i class="bi bi-exclamation-triangle"></i> Top 5 Floors by Variance</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Floor</th>
+                                    <th>Phase</th>
+                                    <th>Budgeted</th>
+                                    <th>Actual</th>
+                                    <th>Variance</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topVarianceFloors">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No data yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Alerts Widget -->
+                <div class="dashboard-card">
+                    <h5 class="mb-3"><i class="bi bi-bell"></i> Active Alerts</h5>
+                    <div id="alertsWidget">
+                        <div class="text-center text-muted" style="padding: 2rem;">
+                            <p>No active alerts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- FLOOR TRACKING MODULE -->
+            <div id="floorTracking" class="module-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="bi bi-table"></i> Floor-Wise Cost Tracking</h1>
+                    <button class="btn btn-primary" onclick="showAddFloorModal()">
+                        <i class="bi bi-plus-circle"></i> Add Floor
+                    </button>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h5 class="mb-3">Floors Summary</h5>
+                    <div class="table-responsive">
+                        <table id="floorTable" class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Floor #</th>
+                                    <th>Phase</th>
+                                    <th>Progress %</th>
+                                    <th>Budgeted Cost</th>
+                                    <th>Actual Spent</th>
+                                    <th>Committed</th>
+                                    <th>Variance</th>
+                                    <th>Remaining</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Generated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- FLOOR ANALYSIS MODULE -->
+            <div id="floorAnalysis" class="module-section">
+                <div class="mb-4">
+                    <h1><i class="bi bi-graph-up"></i> Detailed Floor Analysis</h1>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Select Floor</label>
+                            <select class="form-select" id="floorSelector" onchange="loadFloorAnalysis()">
+                                <option value="">-- Select Floor --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-primary w-100" onclick="loadFloorAnalysis()">
+                                <i class="bi bi-arrow-repeat"></i> Load Analysis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="floorAnalysisContent" style="display: none;">
+                    <!-- Floor Header -->
+                    <div class="dashboard-card primary-card mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 id="floorHeaderName" class="mb-2">Floor Analysis</h5>
+                                <p class="mb-1"><strong>Phase:</strong> <span id="floorHeaderPhase">-</span></p>
+                                <p class="mb-0"><strong>Last Updated:</strong> <span id="floorHeaderDate">-</span></p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">Completion %</div>
+                                    <div class="kpi-value" id="floorCompletionPct">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Budget vs Actual Comparison -->
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="dashboard-card">
+                                <h5 class="mb-3">Budget vs Actual</h5>
+                                <div class="chart-container">
+                                    <canvas id="floorBudgetChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="dashboard-card">
+                                <h5 class="mb-3">Cost Trend</h5>
+                                <div class="chart-container">
+                                    <canvas id="floorTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cost Breakdown by Category -->
+                    <div class="dashboard-card">
+                        <h5 class="mb-3">Cost Breakdown by Category</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Budgeted</th>
+                                        <th>Actual</th>
+                                        <th>Variance</th>
+                                        <th>% of Budget</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="floorCategoryBreakdown">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Select a floor to view details</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Transaction History -->
+                    <div class="dashboard-card">
+                        <h5 class="mb-3">Transaction History</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="floorTransactionHistory">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">No transactions</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Variance Analysis -->
+                    <div class="dashboard-card">
+                        <h5 class="mb-3">Variance Analysis & Notes</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Root Cause Analysis</label>
+                            <textarea class="form-control" id="varianceNotes" rows="3" placeholder="Document variance analysis and findings..."></textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveVarianceNotes()">
+                            <i class="bi bi-check-circle"></i> Save Notes
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BUDGET MANAGEMENT MODULE -->
+            <div id="budgetMgmt" class="module-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="bi bi-calculator"></i> Budget Management</h1>
+                    <button class="btn btn-primary" onclick="showAddBudgetModal()">
+                        <i class="bi bi-plus-circle"></i> Add Budget
+                    </button>
+                </div>
+                
+                <!-- Budget Summary -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="dashboard-card">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Total Budget Pool</div>
+                                <div class="kpi-value currency" id="budgetPoolTotal">₹0.00L</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dashboard-card">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Allocated to Floors</div>
+                                <div class="kpi-value currency" id="budgetAllocated">₹0.00L</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dashboard-card">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Unallocated Reserve</div>
+                                <div class="kpi-value currency text-success" id="budgetReserve">₹0.00L</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Budget Allocation Table -->
+                <div class="dashboard-card">
+                    <h5 class="mb-3">Budget Allocations</h5>
+                    <div class="table-responsive">
+                        <table id="budgetTable" class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Floor</th>
+                                    <th>Allocated Budget</th>
+                                    <th>Spent</th>
+                                    <th>Committed</th>
+                                    <th>Available</th>
+                                    <th>% Used</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Generated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Reallocation Section -->
+                <div class="dashboard-card mt-4">
+                    <h5 class="mb-3">Budget Reallocation Request</h5>
+                    <form id="reallocationForm">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">From Floor</label>
+                                <select class="form-select" id="reallocFrom">
+                                    <option value="">-- Select Floor --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">To Floor</label>
+                                <select class="form-select" id="reallocTo">
+                                    <option value="">-- Select Floor --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Amount (₹ Lakhs)</label>
+                                <input type="number" class="form-control" id="reallocAmount" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-primary w-100" onclick="submitReallocation()">
+                                    <i class="bi bi-arrow-left-right"></i> Reallocate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Justification</label>
+                            <textarea class="form-control" id="reallocJustify" rows="2" placeholder="Provide reason for reallocation..."></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- REPORTS MODULE -->
+            <div id="reports" class="module-section">
+                <div class="mb-4">
+                    <h1><i class="bi bi-file-earmark-pdf"></i> Reports & Analytics</h1>
+                </div>
+                
+                <!-- Report Types -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="dashboard-card text-center" onclick="generateReport('monthlySummary')" style="cursor: pointer;">
+                            <i class="bi bi-graph-up icon-lg mb-3"></i>
+                            <h5>Monthly Cost Summary</h5>
+                            <p class="text-muted">Aggregate costs by floor, category, and phase</p>
+                            <button class="btn btn-sm btn-primary">Generate</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="dashboard-card text-center" onclick="generateReport('budgetActual')" style="cursor: pointer;">
+                            <i class="bi bi-pie-chart icon-lg mb-3"></i>
+                            <h5>Budget vs Actual Report</h5>
+                            <p class="text-muted">Detailed comparison across all dimensions</p>
+                            <button class="btn btn-sm btn-primary">Generate</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="dashboard-card text-center" onclick="generateReport('forecast')" style="cursor: pointer;">
+                            <i class="bi bi-crystal-ball icon-lg mb-3"></i>
+                            <h5>Cost Forecast Report</h5>
+                            <p class="text-muted">Projected final costs and EAC analysis</p>
+                            <button class="btn btn-sm btn-primary">Generate</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="dashboard-card text-center" onclick="generateReport('variance')" style="cursor: pointer;">
+                            <i class="bi bi-exclamation-triangle icon-lg mb-3"></i>
+                            <h5>Variance Analysis Report</h5>
+                            <p class="text-muted">Identify outliers and cost overrun trends</p>
+                            <button class="btn btn-sm btn-primary">Generate</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Custom Report Builder -->
+                <div class="dashboard-card">
+                    <h5 class="mb-3">Custom Report Builder</h5>
+                    <form id="customReportForm">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Report Title</label>
+                                <input type="text" class="form-control" id="customReportTitle" placeholder="Enter report title">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Date Range</label>
+                                <input type="month" class="form-control" id="customReportMonth">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Include Comparables</label>
+                                <select class="form-select" id="customReportComparable">
+                                    <option value="none">None</option>
+                                    <option value="previous-month">Previous Month</option>
+                                    <option value="previous-year">Previous Year</option>
+                                    <option value="baseline">Baseline</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Metrics</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="metricsCost" checked>
+                                <label class="form-check-label" for="metricsCost">Cost Data</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="metricsProgress" checked>
+                                <label class="form-check-label" for="metricsProgress">Progress Metrics</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="metricsKPI" checked>
+                                <label class="form-check-label" for="metricsKPI">KPIs (CPI, SPI, EAC)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="metricsVariance" checked>
+                                <label class="form-check-label" for="metricsVariance">Variance Analysis</label>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="generateCustomReport()">
+                            <i class="bi bi-file-earmark-pdf"></i> Generate Custom Report
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- DATA MANAGEMENT MODULE -->
+            <div id="dataManagement" class="module-section">
+                <div class="mb-4">
+                    <h1><i class="bi bi-cloud-upload"></i> Data Management</h1>
+                </div>
+                
+                <!-- CSV Import Section -->
+                <div class="dashboard-card mb-4">
+                    <h5 class="mb-3">CSV Import</h5>
+                    <p class="text-muted mb-3">Supported format: Floor Number, Phase, Budgeted Amount, Actual Spent, Category</p>
+                    <div class="mb-3">
+                        <label class="form-label">Select CSV File</label>
+                        <input type="file" class="form-control" id="csvFile" accept=".csv" onchange="previewCSVImport()">
+                    </div>
+                    <div id="csvPreview" style="display: none;" class="mb-3">
+                        <label class="form-label">Preview</label>
+                        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-sm" id="previewTable">
+                                <thead class="table-light"></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="importErrors" class="alert alert-danger" style="display: none;"></div>
+                    <button class="btn btn-success" onclick="importCSV()">
+                        <i class="bi bi-upload"></i> Import Data
+                    </button>
+                </div>
+                
+                <!-- Backup & Restore -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="dashboard-card">
+                            <h5 class="mb-3"><i class="bi bi-cloud-check"></i> Backup Data</h5>
+                            <p class="text-muted mb-3">Create a backup of current project data</p>
+                            <button class="btn btn-primary w-100" onclick="backupData()">
+                                <i class="bi bi-download"></i> Backup Now
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="dashboard-card">
+                            <h5 class="mb-3"><i class="bi bi-arrow-counterclockwise"></i> Restore Data</h5>
+                            <p class="text-muted mb-3">Restore from a previous backup</p>
+                            <input type="file" class="form-control mb-2" id="restoreFile" accept=".json">
+                            <button class="btn btn-warning w-100" onclick="restoreData()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Audit Trail -->
+                <div class="dashboard-card mt-4">
+                    <h5 class="mb-3">Data Audit Trail</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Changes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditTrailTable">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No audit records</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modals -->
+    
+    <!-- Add Floor Modal -->
+    <div class="modal fade" id="addFloorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Floor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addFloorForm">
+                        <div class="mb-3">
+                            <label class="form-label">Floor Number/Name</label>
+                            <input type="text" class="form-control" id="floorName" placeholder="e.g., Floor 5" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phase</label>
+                            <select class="form-select" id="floorPhase" required>
+                                <option value="">-- Select Phase --</option>
+                                <option value="Foundation">Foundation</option>
+                                <option value="Structure">Structure</option>
+                                <option value="MEP">MEP</option>
+                                <option value="Finishing">Finishing</option>
+                                <option value="Handover">Handover</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Budgeted Cost (₹ Lakhs)</label>
+                            <input type="number" class="form-control" id="floorBudget" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="floorStartDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Est. Completion</label>
+                            <input type="date" class="form-control" id="floorEndDate" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveFloor()">Add Floor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Budget Modal -->
+    <div class="modal fade" id="addBudgetModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Budget Allocation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBudgetForm">
+                        <div class="mb-3">
+                            <label class="form-label">Select Floor</label>
+                            <select class="form-select" id="budgetFloor" required>
+                                <option value="">-- Select Floor --</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Budget Amount (₹ Lakhs)</label>
+                            <input type="number" class="form-control" id="budgetAmount" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="budgetCategory" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="Labor">Labor</option>
+                                <option value="Materials">Materials</option>
+                                <option value="Equipment">Equipment</option>
+                                <option value="Services">Services</option>
+                                <option value="Permits">Permits & Compliance</option>
+                                <option value="Contingency">Contingency</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="budgetNotes" rows="2" placeholder="Additional notes..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBudget()">Create Budget</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transaction Modal -->
+    <div class="modal fade" id="transactionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Transaction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="transactionForm">
+                        <div class="mb-3">
+                            <label class="form-label">Floor</label>
+                            <select class="form-select" id="transFloor" required>
+                                <option value="">-- Select Floor --</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            <select class="form-select" id="transType" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="Invoice">Invoice</option>
+                                <option value="PO">Purchase Order</option>
+                                <option value="Timesheet">Timesheet</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" id="transDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount (₹ Lakhs)</label>
+                            <input type="number" class="form-control" id="transAmount" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="transCategory" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="Labor">Labor</option>
+                                <option value="Materials">Materials</option>
+                                <option value="Equipment">Equipment</option>
+                                <option value="Services">Services</option>
+                                <option value="Permits">Permits & Compliance</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="transDesc" rows="2" placeholder="Transaction description..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveTransaction()">Add Transaction</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Import Data Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>CSV Format:</strong> Floor Number, Phase, Budgeted Amount, Actual Spent, Category
+                    </div>
+                    <input type="file" class="form-control" id="importFile" accept=".csv">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="performImport()">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    
+    <script>
+        // ========================================
+        // APPLICATION STATE MANAGEMENT
+        // ========================================
+        
+        const appState = {
+            projectName: 'High-Rise Construction - Mumbai',
+            totalBudget: 5000, // in Lakhs
+            floors: [],
+            transactions: [],
+            auditTrail: [],
+            charts: {},
+            currentUser: 'Project Manager'
+        };
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSampleData();
+            refreshDashboard();
+            setupEventListeners();
+            loadFloorSelector();
+            setupDataTables();
+        });
+        
+        function initializeSampleData() {
+            // Load from localStorage if available
+            const savedData = localStorage.getItem('floorCostData');
+            if (savedData) {
+                Object.assign(appState, JSON.parse(savedData));
+            } else {
+                // Create sample data
+                appState.floors = [
+                    { id: 'F1', name: 'Floor 1', phase: 'Foundation', budget: 250, spent: 245, committed: 0, progress: 95, startDate: '2025-01-01', endDate: '2025-02-28' },
+                    { id: 'F2', name: 'Floor 2', phase: 'Structure', budget: 380, spent: 320, committed: 45, progress: 75, startDate: '2025-02-15', endDate: '2025-04-30' },
+                    { id: 'F3', name: 'Floor 3', phase: 'Structure', budget: 380, spent: 285, committed: 60, progress: 70, startDate: '2025-02-15', endDate: '2025-04-30' },
+                    { id: 'F4', name: 'Floor 4', phase: 'MEP', budget: 290, spent: 180, committed: 80, progress: 50, startDate: '2025-03-01', endDate: '2025-05-31' },
+                    { id: 'F5', name: 'Floor 5', phase: 'MEP', budget: 290, spent: 160, committed: 100, progress: 45, startDate: '2025-03-15', endDate: '2025-06-15' },
+                    { id: 'F6', name: 'Floor 6', phase: 'Finishing', budget: 250, spent: 85, committed: 120, progress: 25, startDate: '2025-04-01', endDate: '2025-06-30' },
+                    { id: 'F7', name: 'Floor 7', phase: 'Finishing', budget: 250, spent: 75, committed: 130, progress: 20, startDate: '2025-04-15', endDate: '2025-07-15' },
+                ];
+                
+                appState.transactions = [
+                    { id: 'T1', floor: 'F1', type: 'Invoice', date: '2025-01-15', amount: 120, category: 'Labor', desc: 'Excavation work', status: 'Approved', approver: 'Manager' },
+                    { id: 'T2', floor: 'F1', type: 'Invoice', date: '2025-01-20', amount: 125, category: 'Materials', desc: 'Concrete supply', status: 'Approved', approver: 'Manager' },
+                    { id: 'T3', floor: 'F2', type: 'PO', date: '2025-02-10', amount: 150, category: 'Materials', desc: 'Steel beams', status: 'Pending', approver: '-' },
+                    { id: 'T4', floor: 'F2', type: 'Invoice', date: '2025-02-20', amount: 170, category: 'Labor', desc: 'Construction labor', status: 'Approved', approver: 'Manager' },
+                ];
+                
+                saveAppState();
+            }
+        }
+        
+        function saveAppState() {
+            localStorage.setItem('floorCostData', JSON.stringify(appState));
+            logAuditTrail('Data Saved', 'System', 'Complete application state saved');
+        }
+        
+        function logAuditTrail(action, user, details) {
+            appState.auditTrail.push({
+                timestamp: new Date().toISOString(),
+                user: user || appState.currentUser,
+                action: action,
+                details: details
+            });
+            if (appState.auditTrail.length > 100) {
+                appState.auditTrail.shift();
+            }
+        }
+        
+        // ========================================
+        // MODULE SWITCHING
+        // ========================================
+        
+        function switchModule(moduleName) {
+            // Hide all modules
+            document.querySelectorAll('.module-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected module
+            const selectedModule = document.getElementById(moduleName);
+            if (selectedModule) {
+                selectedModule.classList.add('active');
+            }
+            
+            // Update navigation
+            document.querySelectorAll('.sidebar .nav-link').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.closest('.nav-link').classList.add('active');
+            
+            // Initialize module-specific content
+            if (moduleName === 'floorTracking') {
+                initializeFloorTable();
+            } else if (moduleName === 'budgetMgmt') {
+                initializeBudgetTable();
+            }
+        }
+        
+        // ========================================
+        // DASHBOARD MODULE
+        // ========================================
+        
+        function refreshDashboard() {
+            calculateProjectMetrics();
+            updateDashboardCards();
+            renderCharts();
+            updateTopVarianceFloors();
+            updateAlerts();
+        }
+        
+        function calculateProjectMetrics() {
+            const metrics = {
+                totalBudget: appState.floors.reduce((sum, f) => sum + f.budget, 0),
+                totalSpent: appState.floors.reduce((sum, f) => sum + f.spent, 0),
+                totalCommitted: appState.floors.reduce((sum, f) => sum + f.committed, 0),
+            };
+            
+            metrics.totalActual = metrics.totalSpent + metrics.totalCommitted;
+            metrics.remaining = metrics.totalBudget - metrics.totalSpent;
+            metrics.utilization = ((metrics.totalSpent / metrics.totalBudget) * 100).toFixed(1);
+            
+            // CPI (Cost Performance Index) = Earned Value / Actual Cost
+            // Using progress as proxy for earned value
+            const earnedValue = appState.floors.reduce((sum, f) => sum + (f.budget * f.progress / 100), 0);
+            metrics.cpi = (earnedValue / metrics.totalSpent || 1).toFixed(2);
+            
+            // SPI (Schedule Performance Index) = Earned Value / Planned Value
+            metrics.spi = (earnedValue / metrics.totalBudget).toFixed(2);
+            
+            // EAC (Estimate at Completion) = Total Budget / CPI
+            metrics.eac = (metrics.totalBudget / metrics.cpi).toFixed(0);
+            
+            return metrics;
+        }
+        
+        function updateDashboardCards() {
+            const metrics = calculateProjectMetrics();
+            
+            document.getElementById('totalBudget').textContent = formatCurrency(metrics.totalBudget);
+            document.getElementById('totalSpent').textContent = formatCurrency(metrics.totalSpent);
+            document.getElementById('remainingBudget').textContent = formatCurrency(metrics.remaining);
+            document.getElementById('utilization').textContent = metrics.utilization + '%';
+            document.getElementById('utilizationBar').style.width = metrics.utilization + '%';
+            
+            document.getElementById('cpiValue').textContent = metrics.cpi;
+            document.getElementById('spiValue').textContent = metrics.spi;
+            document.getElementById('eacValue').textContent = formatCurrency(metrics.eac);
+            
+            // Trend indicator
+            const lastThreeMonths = appState.transactions
+                .filter(t => new Date(t.date) > new Date(new Date().getTime() - 3*30*24*60*60*1000))
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const trendElement = document.getElementById('trendValue');
+            if (lastThreeMonths > metrics.totalSpent / 6) {
+                trendElement.textContent = '↗ Ascending';
+                trendElement.parentElement.querySelector('.kpi-trend').className = 'kpi-trend warning';
+            } else {
+                trendElement.textContent = '↘ Descending';
+                trendElement.parentElement.querySelector('.kpi-trend').className = 'kpi-trend down';
+            }
+        }
+        
+        function renderCharts() {
+            renderBurnRateChart();
+            renderCategoryChart();
+        }
+        
+        function renderBurnRateChart() {
+            const ctx = document.getElementById('burnRateChart');
+            if (!ctx) return;
+            
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+            const burnData = [0, 450, 1250, 2100, 2850, 3500];
+            const budgetLine = [0, 833, 1667, 2500, 3333, 4167];
+            
+            if (appState.charts.burnRate) {
+                appState.charts.burnRate.destroy();
+            }
+            
+            appState.charts.burnRate = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Cumulative Spend',
+                            data: burnData,
+                            borderColor: '#2C7A7B',
+                            backgroundColor: 'rgba(44, 122, 123, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#2C7A7B',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'Budget Baseline',
+                            data: budgetLine,
+                            borderColor: '#F59E0B',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost (₹ Lakhs)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderCategoryChart() {
+            const ctx = document.getElementById('categoryChart');
+            if (!ctx) return;
+            
+            const categoryTotals = {
+                'Labor': 820,
+                'Materials': 1350,
+                'Equipment': 650,
+                'Services': 580,
+                'Permits': 100
+            };
+            
+            if (appState.charts.category) {
+                appState.charts.category.destroy();
+            }
+            
+            appState.charts.category = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryTotals),
+                    datasets: [{
+                        data: Object.values(categoryTotals),
+                        backgroundColor: [
+                            '#2C7A7B',
+                            '#22C55E',
+                            '#F59E0B',
+                            '#3B82F6',
+                            '#8B5CF6'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateTopVarianceFloors() {
+            const floorVariances = appState.floors.map(f => ({
+                ...f,
+                variance: f.spent - f.budget,
+                variancePct: ((f.spent - f.budget) / f.budget * 100).toFixed(1)
+            })).sort((a, b) => Math.abs(b.variance) - Math.abs(a.variance)).slice(0, 5);
+            
+            const tbody = document.getElementById('topVarianceFloors');
+            tbody.innerHTML = floorVariances.map(f => `
+                <tr>
+                    <td><strong>${f.name}</strong></td>
+                    <td>${f.phase}</td>
+                    <td class="currency">${formatCurrency(f.budget)}</td>
+                    <td class="currency">${formatCurrency(f.spent)}</td>
+                    <td class="currency ${f.variance < 0 ? 'text-success' : 'text-danger'}">
+                        ${f.variance < 0 ? '-' : '+'}${formatCurrency(Math.abs(f.variance))} (${f.variancePct}%)
+                    </td>
+                    <td>
+                        <span class="variance-badge ${getVarianceStatus(f.variancePct).class}">
+                            ${getVarianceStatus(f.variancePct).label}
+                        </span>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="6" class="text-center text-muted">No data</td></tr>';
+        }
+        
+        function getVarianceStatus(pct) {
+            const absPct = Math.abs(pct);
+            if (absPct <= 5) return { class: 'good', label: 'Within Budget' };
+            if (absPct <= 15) return { class: 'warning', label: 'Minor Variance' };
+            return { class: 'critical', label: 'Significant Variance' };
+        }
+        
+        function updateAlerts() {
+            const alerts = [];
+            
+            appState.floors.forEach(f => {
+                const variance = ((f.spent - f.budget) / f.budget * 100);
+                if (variance > 15) {
+                    alerts.push({
+                        type: 'danger',
+                        icon: 'exclamation-triangle',
+                        message: `${f.name}: Budget exceeded by ${Math.abs(variance).toFixed(1)}%`
+                    });
+                } else if (variance > 5) {
+                    alerts.push({
+                        type: 'warning',
+                        icon: 'exclamation-circle',
+                        message: `${f.name}: Minor budget variance of ${Math.abs(variance).toFixed(1)}%`
+                    });
+                }
+            });
+            
+            const pendingTransactions = appState.transactions.filter(t => t.status === 'Pending').length;
+            if (pendingTransactions > 0) {
+                alerts.push({
+                    type: 'info',
+                    icon: 'hourglass-split',
+                    message: `${pendingTransactions} transactions pending approval`
+                });
+            }
+            
+            const alertsContainer = document.getElementById('alertsWidget');
+            if (alerts.length === 0) {
+                alertsContainer.innerHTML = '<div class="text-center text-muted" style="padding: 2rem;"><p>No active alerts</p></div>';
+            } else {
+                alertsContainer.innerHTML = alerts.map(a => `
+                    <div class="alert-container alert-${a.type}">
+                        <i class="bi bi-${a.icon}"></i> ${a.message}
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // ========================================
+        // FLOOR TRACKING MODULE
+        // ========================================
+        
+        function setupDataTables() {
+            initializeFloorTable();
+            initializeBudgetTable();
+        }
+        
+        function initializeFloorTable() {
+            const table = document.getElementById('floorTable');
+            if (!table) return;
+            
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = appState.floors.map(f => `
+                <tr>
+                    <td><strong>${f.name}</strong></td>
+                    <td>${f.phase}</td>
+                    <td>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" style="width: ${f.progress}%"></div>
+                        </div>
+                        <small>${f.progress}%</small>
+                    </td>
+                    <td class="currency">${formatCurrency(f.budget)}</td>
+                    <td class="currency">${formatCurrency(f.spent)}</td>
+                    <td class="currency">${formatCurrency(f.committed)}</td>
+                    <td class="currency ${(f.spent - f.budget) < 0 ? 'text-success' : 'text-danger'}">
+                        ${formatCurrency(f.spent - f.budget)}
+                    </td>
+                    <td class="currency text-primary">${formatCurrency(f.budget - f.spent - f.committed)}</td>
+                    <td>
+                        <span class="variance-badge ${getVarianceStatus(((f.spent - f.budget) / f.budget * 100)).class}">
+                            ${getVarianceStatus(((f.spent - f.budget) / f.budget * 100)).label}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="selectFloorForAnalysis('${f.id}')">
+                            <i class="bi bi-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="showTransactionModal('${f.id}')">
+                            <i class="bi bi-plus"></i> Transaction
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Initialize DataTable if not already done
+            if (!$.fn.DataTable.isDataTable(table)) {
+                $(table).DataTable({
+                    responsive: true,
+                    pageLength: 10,
+                    dom: 'lfrtp'
+                });
+            } else {
+                $(table).DataTable().clear().draw();
+            }
+        }
+        
+        function initializeBudgetTable() {
+            const table = document.getElementById('budgetTable');
+            if (!table) return;
+            
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = appState.floors.map(f => {
+                const available = f.budget - f.spent - f.committed;
+                const pctUsed = ((f.spent / f.budget) * 100).toFixed(1);
+                return `
+                    <tr>
+                        <td><strong>${f.name}</strong></td>
+                        <td class="currency">${formatCurrency(f.budget)}</td>
+                        <td class="currency">${formatCurrency(f.spent)}</td>
+                        <td class="currency">${formatCurrency(f.committed)}</td>
+                        <td class="currency">${formatCurrency(available)}</td>
+                        <td>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" style="width: ${pctUsed}%"></div>
+                            </div>
+                            ${pctUsed}%
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="editBudget('${f.id}')">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            if (!$.fn.DataTable.isDataTable(table)) {
+                $(table).DataTable({
+                    responsive: true,
+                    pageLength: 10
+                });
+            } else {
+                $(table).DataTable().clear().draw();
+            }
+        }
+        
+        function selectFloorForAnalysis(floorId) {
+            const floor = appState.floors.find(f => f.id === floorId);
+            if (floor) {
+                document.getElementById('floorSelector').value = floorId;
+                switchModule('floorAnalysis');
+                loadFloorAnalysis();
+            }
+        }
+        
+        // ========================================
+        // FLOOR ANALYSIS MODULE
+        // ========================================
+        
+        function loadFloorSelector() {
+            const select = document.getElementById('floorSelector');
+            select.innerHTML = '<option value="">-- Select Floor --</option>' +
+                appState.floors.map(f => `<option value="${f.id}">${f.name} - ${f.phase}</option>`).join('');
+            
+            const budgetFloor = document.getElementById('budgetFloor');
+            if (budgetFloor) {
+                budgetFloor.innerHTML = '<option value="">-- Select Floor --</option>' +
+                    appState.floors.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+            }
+            
+            const reallocFrom = document.getElementById('reallocFrom');
+            const reallocTo = document.getElementById('reallocTo');
+            const transFloor = document.getElementById('transFloor');
+            
+            [reallocFrom, reallocTo, transFloor].forEach(elem => {
+                if (elem) {
+                    elem.innerHTML = '<option value="">-- Select Floor --</option>' +
+                        appState.floors.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+                }
+            });
+        }
+        
+        function loadFloorAnalysis() {
+            const floorId = document.getElementById('floorSelector').value;
+            if (!floorId) return;
+            
+            const floor = appState.floors.find(f => f.id === floorId);
+            if (!floor) return;
+            
+            document.getElementById('floorAnalysisContent').style.display = 'block';
+            
+            // Update header
+            document.getElementById('floorHeaderName').textContent = `${floor.name} - ${floor.phase}`;
+            document.getElementById('floorHeaderPhase').textContent = floor.phase;
+            document.getElementById('floorHeaderDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('floorCompletionPct').textContent = floor.progress + '%';
+            
+            // Render budget comparison chart
+            renderFloorBudgetChart(floor);
+            
+            // Render trend chart
+            renderFloorTrendChart(floor);
+            
+            // Cost breakdown
+            updateFloorCategoryBreakdown(floor);
+            
+            // Transaction history
+            updateFloorTransactionHistory(floor);
+        }
+        
+        function renderFloorBudgetChart(floor) {
+            const ctx = document.getElementById('floorBudgetChart');
+            if (!ctx) return;
+            
+            if (appState.charts.floorBudget) {
+                appState.charts.floorBudget.destroy();
+            }
+            
+            appState.charts.floorBudget = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Budgeted', 'Actual', 'Committed'],
+                    datasets: [{
+                        label: 'Amount (₹ Lakhs)',
+                        data: [floor.budget, floor.spent, floor.committed],
+                        backgroundColor: ['#2C7A7B', '#EF4444', '#F59E0B'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderFloorTrendChart(floor) {
+            const ctx = document.getElementById('floorTrendChart');
+            if (!ctx) return;
+            
+            const months = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'];
+            const trendData = [0, floor.budget * 0.1, floor.budget * 0.25, floor.budget * 0.45, floor.spent * 0.8, floor.spent];
+            const budgetTrend = [0, floor.budget / 6, floor.budget / 3, floor.budget / 2, (floor.budget * 2 / 3), floor.budget];
+            
+            if (appState.charts.floorTrend) {
+                appState.charts.floorTrend.destroy();
+            }
+            
+            appState.charts.floorTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Actual Cumulative',
+                            data: trendData,
+                            borderColor: '#2C7A7B',
+                            backgroundColor: 'rgba(44, 122, 123, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Budgeted Trend',
+                            data: budgetTrend,
+                            borderColor: '#F59E0B',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateFloorCategoryBreakdown(floor) {
+            const floorTransactions = appState.transactions.filter(t => t.floor === floor.id);
+            const categoryTotals = {};
+            
+            ['Labor', 'Materials', 'Equipment', 'Services', 'Permits'].forEach(cat => {
+                categoryTotals[cat] = {
+                    actual: floorTransactions.filter(t => t.category === cat).reduce((sum, t) => sum + t.amount, 0),
+                    budgeted: floor.budget * 0.2 // Sample allocation
+                };
+            });
+            
+            const tbody = document.getElementById('floorCategoryBreakdown');
+            tbody.innerHTML = Object.entries(categoryTotals).map(([cat, data]) => {
+                const variance = data.actual - data.budgeted;
+                const pctBudget = ((data.actual / floor.budget) * 100).toFixed(1);
+                return `
+                    <tr>
+                        <td>${cat}</td>
+                        <td class="currency">${formatCurrency(data.budgeted)}</td>
+                        <td class="currency">${formatCurrency(data.actual)}</td>
+                        <td class="currency ${variance < 0 ? 'text-success' : 'text-danger'}">
+                            ${variance < 0 ? '-' : '+'}${formatCurrency(Math.abs(variance))}
+                        </td>
+                        <td>${pctBudget}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function updateFloorTransactionHistory(floor) {
+            const floorTransactions = appState.transactions.filter(t => t.floor === floor.id);
+            const tbody = document.getElementById('floorTransactionHistory');
+            
+            tbody.innerHTML = floorTransactions.map(t => `
+                <tr>
+                    <td>${new Date(t.date).toLocaleDateString()}</td>
+                    <td><span class="badge badge-pill" style="background-color: ${t.type === 'Invoice' ? '#2C7A7B' : '#F59E0B'}">${t.type}</span></td>
+                    <td>${t.desc}</td>
+                    <td>${t.category}</td>
+                    <td class="currency">${formatCurrency(t.amount)}</td>
+                    <td><span class="badge badge-pill" style="background-color: ${t.status === 'Approved' ? '#22C55E' : '#F59E0B'}">${t.status}</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="6" class="text-center text-muted">No transactions</td></tr>';
+        }
+        
+        function saveVarianceNotes() {
+            const notes = document.getElementById('varianceNotes').value;
+            const floorId = document.getElementById('floorSelector').value;
+            if (floorId && notes) {
+                logAuditTrail('Variance Notes Updated', appState.currentUser, `Floor ${floorId}: ${notes.substring(0, 50)}...`);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Notes Saved',
+                    text: 'Variance analysis notes have been saved successfully.',
+                    timer: 1500
+                });
+            }
+        }
+        
+        // ========================================
+        // MODALS & FORMS
+        // ========================================
+        
+        function showAddFloorModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addFloorModal'));
+            modal.show();
+        }
+        
+        function showAddBudgetModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addBudgetModal'));
+            modal.show();
+        }
+        
+        function showTransactionModal(floorId = null) {
+            if (floorId) {
+                document.getElementById('transFloor').value = floorId;
+            }
+            const modal = new bootstrap.Modal(document.getElementById('transactionModal'));
+            modal.show();
+        }
+        
+        function showImportModal() {
+            const modal = new bootstrap.Modal(document.getElementById('importModal'));
+            modal.show();
+        }
+        
+        function saveFloor() {
+            const floor = {
+                id: 'F' + (appState.floors.length + 1),
+                name: document.getElementById('floorName').value,
+                phase: document.getElementById('floorPhase').value,
+                budget: parseFloat(document.getElementById('floorBudget').value),
+                spent: 0,
+                committed: 0,
+                progress: 0,
+                startDate: document.getElementById('floorStartDate').value,
+                endDate: document.getElementById('floorEndDate').value
+            };
+            
+            appState.floors.push(floor);
+            logAuditTrail('Floor Added', appState.currentUser, `${floor.name} - Budget: ₹${floor.budget}L`);
+            saveAppState();
+            loadFloorSelector();
+            initializeFloorTable();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Floor Added',
+                text: `${floor.name} has been added successfully.`,
+                timer: 1500
+            });
+            
+            bootstrap.Modal.getInstance(document.getElementById('addFloorModal')).hide();
+            document.getElementById('addFloorForm').reset();
+        }
+        
+        function saveBudget() {
+            const floorId = document.getElementById('budgetFloor').value;
+            const amount = parseFloat(document.getElementById('budgetAmount').value);
+            
+            if (floorId && amount) {
+                const floor = appState.floors.find(f => f.id === floorId);
+                if (floor) {
+                    floor.budget = amount;
+                    logAuditTrail('Budget Updated', appState.currentUser, `${floor.name}: ₹${amount}L`);
+                    saveAppState();
+                    initializeBudgetTable();
+                    initializeFloorTable();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Budget Created',
+                        text: 'Budget allocation has been created successfully.',
+                        timer: 1500
+                    });
+                    
+                    bootstrap.Modal.getInstance(document.getElementById('addBudgetModal')).hide();
+                    document.getElementById('addBudgetForm').reset();
+                }
+            }
+        }
+        
+        function saveTransaction() {
+            const transaction = {
+                id: 'T' + (appState.transactions.length + 1),
+                floor: document.getElementById('transFloor').value,
+                type: document.getElementById('transType').value,
+                date: document.getElementById('transDate').value,
+                amount: parseFloat(document.getElementById('transAmount').value),
+                category: document.getElementById('transCategory').value,
+                desc: document.getElementById('transDesc').value,
+                status: 'Pending',
+                approver: '-'
+            };
+            
+            appState.transactions.push(transaction);
+            
+            // Update floor spent
+            const floor = appState.floors.find(f => f.id === transaction.floor);
+            if (floor) {
+                if (transaction.type === 'Invoice') {
+                    floor.spent += transaction.amount;
+                } else if (transaction.type === 'PO') {
+                    floor.committed += transaction.amount;
+                }
+            }
+            
+            logAuditTrail('Transaction Added', appState.currentUser, `${transaction.type}: ₹${transaction.amount}L on ${transaction.floor}`);
+            saveAppState();
+            initializeFloorTable();
+            initializeBudgetTable();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Transaction Added',
+                text: 'Transaction has been recorded and is pending approval.',
+                timer: 1500
+            });
+            
+            bootstrap.Modal.getInstance(document.getElementById('transactionModal')).hide();
+            document.getElementById('transactionForm').reset();
+        }
+        
+        function submitReallocation() {
+            const from = document.getElementById('reallocFrom').value;
+            const to = document.getElementById('reallocTo').value;
+            const amount = parseFloat(document.getElementById('reallocAmount').value);
+            const justification = document.getElementById('reallocJustify').value;
+            
+            if (from && to && amount && justification) {
+                const floorFrom = appState.floors.find(f => f.id === from);
+                const floorTo = appState.floors.find(f => f.id === to);
+                
+                if (floorFrom && floorTo) {
+                    floorFrom.budget -= amount;
+                    floorTo.budget += amount;
+                    
+                    logAuditTrail('Budget Reallocated', appState.currentUser, `₹${amount}L from ${floorFrom.name} to ${floorTo.name}: ${justification}`);
+                    saveAppState();
+                    initializeBudgetTable();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Reallocation Complete',
+                        text: `₹${amount}L reallocated successfully.`,
+                        timer: 1500
+                    });
+                    
+                    document.getElementById('reallocationForm').reset();
+                }
+            }
+        }
+        
+        // ========================================
+        // REPORTS MODULE
+        // ========================================
+        
+        function generateReport(reportType) {
+            const metrics = calculateProjectMetrics();
+            let reportContent = `<h3>${appState.projectName}</h3>`;
+            reportContent += `<p>Generated on: ${new Date().toLocaleDateString()}</p>`;
+            
+            switch(reportType) {
+                case 'monthlySummary':
+                    reportContent += generateMonthlySummary(metrics);
+                    break;
+                case 'budgetActual':
+                    reportContent += generateBudgetActualReport(metrics);
+                    break;
+                case 'forecast':
+                    reportContent += generateForecastReport(metrics);
+                    break;
+                case 'variance':
+                    reportContent += generateVarianceReport(metrics);
+                    break;
+            }
+            
+            showReportPreview(reportContent);
+        }
+        
+        function generateMonthlySummary(metrics) {
+            return `
+                <h4>Monthly Cost Summary</h4>
+                <p><strong>Total Budget:</strong> ₹${metrics.totalBudget}L</p>
+                <p><strong>Total Spent:</strong> ₹${metrics.totalSpent}L</p>
+                <p><strong>Remaining:</strong> ₹${metrics.remaining}L</p>
+                <p><strong>Utilization:</strong> ${metrics.utilization}%</p>
+                <hr>
+                <h5>Floor-wise Breakdown</h5>
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr style="background-color:#f0f0f0;">
+                        <th style="border:1px solid #ddd; padding:8px;">Floor</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Budget</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Spent</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Status</th>
+                    </tr>
+                    ${appState.floors.map(f => `
+                        <tr>
+                            <td style="border:1px solid #ddd; padding:8px;">${f.name}</td>
+                            <td style="border:1px solid #ddd; padding:8px;">₹${formatCurrency(f.budget)}</td>
+                            <td style="border:1px solid #ddd; padding:8px;">₹${formatCurrency(f.spent)}</td>
+                            <td style="border:1px solid #ddd; padding:8px;">${f.progress}% Complete</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+        }
+        
+        function generateBudgetActualReport(metrics) {
+            return `
+                <h4>Budget vs Actual Report</h4>
+                <p><strong>CPI:</strong> ${metrics.cpi} (${metrics.cpi > 1 ? 'Under Budget' : 'Over Budget'})</p>
+                <p><strong>Total Variance:</strong> ₹${Math.abs(metrics.totalSpent - metrics.totalBudget)}L</p>
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr style="background-color:#f0f0f0;">
+                        <th style="border:1px solid #ddd; padding:8px;">Metric</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Amount</th>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:8px;">Total Budget</td>
+                        <td style="border:1px solid #ddd; padding:8px;">₹${formatCurrency(metrics.totalBudget)}</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:8px;">Total Actual</td>
+                        <td style="border:1px solid #ddd; padding:8px;">₹${formatCurrency(metrics.totalSpent)}</td>
+                    </tr>
+                    <tr style="background-color:#fff3cd;">
+                        <td style="border:1px solid #ddd; padding:8px;"><strong>Variance</strong></td>
+                        <td style="border:1px solid #ddd; padding:8px;"><strong>₹${formatCurrency(metrics.totalBudget - metrics.totalSpent)}</strong></td>
+                    </tr>
+                </table>
+            `;
+        }
+        
+        function generateForecastReport(metrics) {
+            return `
+                <h4>Cost Forecast Report</h4>
+                <p><strong>Estimated Cost at Completion (EAC):</strong> ₹${formatCurrency(metrics.eac)}L</p>
+                <p><strong>Estimate to Complete (ETC):</strong> ₹${formatCurrency(metrics.eac - metrics.totalSpent)}L</p>
+                <p><strong>Budget Variance at Completion:</strong> ₹${formatCurrency(metrics.totalBudget - metrics.eac)}L</p>
+                <p><strong>Cost Performance Index:</strong> ${metrics.cpi}</p>
+            `;
+        }
+        
+        function generateVarianceReport(metrics) {
+            const varianceFloors = appState.floors.map(f => ({
+                ...f,
+                variance: ((f.spent - f.budget) / f.budget * 100).toFixed(1)
+            })).filter(f => Math.abs(f.variance) > 5);
+            
+            return `
+                <h4>Variance Analysis Report</h4>
+                <p><strong>Total Floors with Variance > 5%:</strong> ${varianceFloors.length}</p>
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr style="background-color:#f0f0f0;">
+                        <th style="border:1px solid #ddd; padding:8px;">Floor</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Variance %</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Amount</th>
+                    </tr>
+                    ${varianceFloors.map(f => `
+                        <tr>
+                            <td style="border:1px solid #ddd; padding:8px;">${f.name}</td>
+                            <td style="border:1px solid #ddd; padding:8px; color: ${f.variance > 0 ? 'red' : 'green'}">${f.variance}%</td>
+                            <td style="border:1px solid #ddd; padding:8px;">₹${formatCurrency(f.spent - f.budget)}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+        }
+        
+        function generateCustomReport() {
+            const title = document.getElementById('customReportTitle').value || 'Custom Report';
+            const month = document.getElementById('customReportMonth').value;
+            const comparable = document.getElementById('customReportComparable').value;
+            
+            const metrics = calculateProjectMetrics();
+            let content = `<h3>${title}</h3>`;
+            content += `<p>Period: ${month}</p>`;
+            content += `<p>Comparable: ${comparable}</p>`;
+            content += `<hr>`;
+            content += `<p><strong>Total Budget:</strong> ₹${formatCurrency(metrics.totalBudget)}L</p>`;
+            content += `<p><strong>Total Spent:</strong> ₹${formatCurrency(metrics.totalSpent)}L</p>`;
+            content += `<p><strong>CPI:</strong> ${metrics.cpi}</p>`;
+            
+            showReportPreview(content);
+        }
+        
+        function showReportPreview(content) {
+            Swal.fire({
+                title: 'Report Preview',
+                html: `<div style="text-align: left; max-height: 400px; overflow-y: auto;">${content}</div>`,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Export as PDF',
+                cancelButtonText: 'Close'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    exportReportToPDF(content);
+                }
+            });
+        }
+        
+        function exportReportToPDF(content) {
+            const element = document.createElement('div');
+            element.innerHTML = content;
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'PDF Generated',
+                text: 'Report has been exported as PDF',
+                timer: 1500
+            });
+            
+            logAuditTrail('Report Generated', appState.currentUser, 'PDF report exported');
+        }
+        
+        // ========================================
+        // DATA MANAGEMENT MODULE
+        // ========================================
+        
+        function previewCSVImport() {
+            const file = document.getElementById('csvFile').files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                const lines = csv.split('\n');
+                const headers = lines[0].split(',');
+                const rows = lines.slice(1, Math.min(6, lines.length));
+                
+                let previewHTML = '<thead><tr>';
+                headers.forEach(h => {
+                    previewHTML += `<th>${h.trim()}</th>`;
+                });
+                previewHTML += '</tr></thead><tbody>';
+                
+                rows.forEach(row => {
+                    if (row.trim()) {
+                        const cells = row.split(',');
+                        previewHTML += '<tr>';
+                        cells.forEach(cell => {
+                            previewHTML += `<td>${cell.trim()}</td>`;
+                        });
+                        previewHTML += '</tr>';
+                    }
+                });
+                previewHTML += '</tbody>';
+                
+                document.getElementById('previewTable').innerHTML = previewHTML;
+                document.getElementById('csvPreview').style.display = 'block';
+            };
+            reader.readAsText(file);
+        }
+        
+        function importCSV() {
+            const file = document.getElementById('csvFile').files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n');
+                    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                    
+                    let importedCount = 0;
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        
+                        const cells = lines[i].split(',');
+                        const floor = {
+                            id: 'F' + (appState.floors.length + 1),
+                            name: cells[0]?.trim() || `Floor ${i}`,
+                            phase: cells[1]?.trim() || 'Unknown',
+                            budget: parseFloat(cells[2]) || 0,
+                            spent: parseFloat(cells[3]) || 0,
+                            committed: 0,
+                            progress: 0,
+                            startDate: new Date().toISOString().split('T')[0],
+                            endDate: new Date().toISOString().split('T')[0]
+                        };
+                        
+                        appState.floors.push(floor);
+                        importedCount++;
+                    }
+                    
+                    saveAppState();
+                    loadFloorSelector();
+                    initializeFloorTable();
+                    initializeBudgetTable();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Import Successful',
+                        text: `${importedCount} floors imported successfully.`,
+                        timer: 1500
+                    });
+                    
+                    document.getElementById('csvFile').value = '';
+                    document.getElementById('csvPreview').style.display = 'none';
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Import Failed',
+                        text: 'Error parsing CSV file. Please check the format.',
+                        timer: 1500
+                    });
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function backupData() {
+            const dataStr = JSON.stringify(appState, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Backup Created',
+                text: 'Data backup has been downloaded.',
+                timer: 1500
+            });
+            
+            logAuditTrail('Backup Created', appState.currentUser, 'Full data backup exported');
+        }
+        
+        function restoreData() {
+            const file = document.getElementById('restoreFile').files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const restored = JSON.parse(e.target.result);
+                    Object.assign(appState, restored);
+                    saveAppState();
+                    location.reload();
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Restore Failed',
+                        text: 'Invalid backup file format.',
+                        timer: 1500
+                    });
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function formatCurrency(value) {
+            if (value >= 100) {
+                return (value / 100).toFixed(2) + ' Cr';
+            }
+            return value.toFixed(2) + ' L';
+        }
+        
+        function setupEventListeners() {
+            // Add any additional event listeners here
+        }
+        
+        function showExportOptions() {
+            Swal.fire({
+                title: 'Export Data',
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Export CSV',
+                denyButtonText: 'Export JSON',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Export CSV
+                    let csv = 'Floor,Phase,Budget,Spent,Committed,Progress\n';
+                    appState.floors.forEach(f => {
+                        csv += `${f.name},${f.phase},${f.budget},${f.spent},${f.committed},${f.progress}\n`;
+                    });
+                    
+                    const blob = new Blob([csv], {type: 'text/csv'});
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `export_${new Date().toISOString().split('T')[0]}.csv`;
+                    link.click();
+                } else if (result.isDenied) {
+                    backupData();
+                }
+            });
+        }
+        
+        function showSettings() {
+            Swal.fire({
+                title: 'Settings',
+                html: `
+                    <div style="text-align: left;">
+                        <p><strong>Project Name:</strong> ${appState.projectName}</p>
+                        <p><strong>Current User:</strong> ${appState.currentUser}</p>
+                        <p><strong>Data Storage:</strong> Browser Local Storage</p>
+                        <hr>
+                        <button class="btn btn-danger btn-sm" onclick="clearAllData()">Clear All Data</button>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Close'
+            });
+        }
+        
+        function clearAllData() {
+            Swal.fire({
+                title: 'Clear All Data?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Yes, clear all'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('floorCostData');
+                    location.reload();
+                }
+            });
+        }
+        
+        function showAddFloorModal() {
+            new bootstrap.Modal(document.getElementById('addFloorModal')).show();
+        }
+        
+        function showAddBudgetModal() {
+            new bootstrap.Modal(document.getElementById('addBudgetModal')).show();
+        }
+        
+        function showImportModal() {
+            new bootstrap.Modal(document.getElementById('importModal')).show();
+        }
+        
+        function editBudget(floorId) {
+            const floor = appState.floors.find(f => f.id === floorId);
+            if (floor) {
+                Swal.fire({
+                    title: `Edit Budget - ${floor.name}`,
+                    html: `
+                        <input type="number" id="editBudgetAmount" class="form-control" step="0.01" value="${floor.budget}" placeholder="Budget Amount">
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Update'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const newAmount = parseFloat(document.getElementById('editBudgetAmount').value);
+                        if (newAmount) {
+                            floor.budget = newAmount;
+                            saveAppState();
+                            initializeBudgetTable();
+                            initializeFloorTable();
+                            logAuditTrail('Budget Edited', appState.currentUser, `${floor.name}: ₹${newAmount}L`);
+                        }
+                    }
+                });
+            }
+        }
+        
+        function performImport() {
+            const file = document.getElementById('importFile').files[0];
+            if (file) {
+                importCSV.call({ files: [file] });
+                bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+            }
+        }
+    </script>
+</body>
+</html>

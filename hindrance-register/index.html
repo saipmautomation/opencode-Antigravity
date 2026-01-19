@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hindrance Register - Construction Project Management Tool">
+    <meta name="theme-color" content="#008B8B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Hindrance Register | Construction Project Management</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="apple-touch-icon" href="assets/images/icon-192.png">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/responsive.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Offline Indicator -->
+    <div id="offlineIndicator" class="offline-indicator d-none">
+        <i class="bi bi-wifi-off me-2"></i>
+        <span>You are offline. Changes will sync when connection is restored.</span>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header text-center">
+                    <div class="login-logo">
+                        <i class="bi bi-building-gear"></i>
+                    </div>
+                    <h1 class="login-title">Hindrance Register</h1>
+                    <p class="login-subtitle">Construction Project Management System</p>
+                </div>
+                <form id="loginForm" class="login-form">
+                    <div class="mb-3">
+                        <label for="loginUsername" class="form-label">Username <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="loginUsername" placeholder="Enter username" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Password <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Enter password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                    </button>
+                </form>
+                <div class="login-footer text-center mt-4">
+                    <small class="text-muted">
+                        Default credentials: admin / admin123<br>
+                        Compliant with IS 15883-2 Standards
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app d-none">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <i class="bi bi-building-gear me-2 fs-4"></i>
+                    <span class="d-none d-md-inline">Hindrance Register</span>
+                    <span class="d-inline d-md-none">HR</span>
+                </a>
+                
+                <!-- Project Name Badge -->
+                <span class="badge bg-light text-primary d-none d-lg-inline-block me-auto ms-3" id="navProjectName">
+                    Mumbai High-Rise Project
+                </span>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-page="dashboard">
+                                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="records">
+                                <i class="bi bi-table me-1"></i>Records
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="reports">
+                                <i class="bi bi-file-earmark-bar-graph me-1"></i>Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="settings">
+                                <i class="bi bi-gear me-1"></i>Settings
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span id="navUserName">Admin</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><span class="dropdown-item-text" id="navUserRole"><small class="text-muted">Site In-Charge</small></span></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" id="btnProfile"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#" id="btnThemeToggle"><i class="bi bi-moon me-2"></i>Dark Mode</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <section id="pageDashboard" class="page-section active">
+                <div class="container-fluid py-4">
+                    <!-- Page Header -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="page-title mb-1">
+                                <i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard
+                            </h2>
+                            <p class="text-muted mb-0">Overview of hindrance records and project status</p>
+                        </div>
+                        <div class="d-flex gap-2 mt-2 mt-md-0">
+                            <button class="btn btn-outline-primary" id="btnRefreshDashboard">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                            </button>
+                            <button class="btn btn-primary" id="btnQuickCreate">
+                                <i class="bi bi-plus-lg me-1"></i>New Hindrance
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-4 col-xl-2">
+                            <div class="card stat-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-primary-subtle text-primary">
+                                        <i class="bi bi-folder2-open"></i>
+                                    </div>
+                                    <h3 class="stat-value" id="statTotalRecords">0</h3>
+                                    <p class="stat-label">Total Records</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-2">
+                            <div class="card stat-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-warning-subtle text-warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                    <h3 class="stat-value" id="statActiveHindrances">0</h3>
+                                    <p class="stat-label">Active</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-2">
+                            <div class="card stat-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-success-subtle text-success">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                    <h3 class="stat-value" id="statResolvedHindrances">0</h3>
+                                    <p class="stat-label">Resolved</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-2">
+                            <div class="card stat-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-danger-subtle text-danger">
+                                        <i class="bi bi-alarm"></i>
+                                    </div>
+                                    <h3 class="stat-value" id="statOverdueHindrances">0</h3>
+                                    <p class="stat-label">Overdue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-2">
+                            <div class="card stat-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-info-subtle text-info">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <h3 class="stat-value" id="statAvgResolutionTime">0</h3>
+                                    <p class="stat-label">Avg Days</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-xl-2">
+                            <div class="card stat-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-secondary-subtle text-secondary">
+                                        <i class="bi bi-hourglass-split"></i>
+                                    </div>
+                                    <h3 class="stat-value" id="statPendingApproval">0</h3>
+                                    <p class="stat-label">Pending Approval</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card quick-stat-card border-start border-danger border-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="text-muted mb-1 small">Oldest Pending</p>
+                                            <h4 class="mb-0" id="statOldestPending">0 days</h4>
+                                        </div>
+                                        <i class="bi bi-calendar-x text-danger fs-3"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card quick-stat-card border-start border-primary border-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="text-muted mb-1 small">Most Common Type</p>
+                                            <h6 class="mb-0 text-truncate" id="statMostCommonType">-</h6>
+                                        </div>
+                                        <i class="bi bi-bar-chart text-primary fs-3"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card quick-stat-card border-start border-success border-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="text-muted mb-1 small">Success Rate</p>
+                                            <h4 class="mb-0" id="statSuccessRate">0%</h4>
+                                        </div>
+                                        <i class="bi bi-trophy text-success fs-3"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card quick-stat-card border-start border-warning border-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="text-muted mb-1 small">Total Delay Days</p>
+                                            <h4 class="mb-0" id="statTotalDelayDays">0</h4>
+                                        </div>
+                                        <i class="bi bi-calendar3 text-warning fs-3"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-lg-8">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-graph-up me-2"></i>Hindrance Timeline (Last 30 Days)
+                                    </h5>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary active" data-period="30">30D</button>
+                                        <button type="button" class="btn btn-outline-primary" data-period="60">60D</button>
+                                        <button type="button" class="btn btn-outline-primary" data-period="90">90D</button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="chartTimeline" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-pie-chart me-2"></i>Status Distribution
+                                    </h5>
+                                </div>
+                                <div class="card-body d-flex align-items-center justify-content-center">
+                                    <canvas id="chartStatusDistribution" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-bar-chart me-2"></i>Hindrances by Work Phase
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="chartWorkPhase" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-person-badge me-2"></i>Responsibility Attribution
+                                    </h5>
+                                </div>
+                                <div class="card-body d-flex align-items-center justify-content-center">
+                                    <canvas id="chartResponsibility" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent & Overdue Items -->
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-clock me-2"></i>Recent Hindrances
+                                    </h5>
+                                    <a href="#" class="btn btn-sm btn-link" data-page="records">View All</a>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="list-group list-group-flush" id="recentHindrancesList">
+                                        <div class="list-group-item text-center text-muted py-4">
+                                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                            No recent hindrances
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card border-danger">
+                                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-exclamation-octagon me-2"></i>Overdue Hindrances
+                                    </h5>
+                                    <span class="badge bg-white text-danger" id="overdueCount">0</span>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="list-group list-group-flush" id="overdueHindrancesList">
+                                        <div class="list-group-item text-center text-muted py-4">
+                                            <i class="bi bi-check-circle fs-2 d-block mb-2 text-success"></i>
+                                            No overdue hindrances
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Records Page -->
+            <section id="pageRecords" class="page-section">
+                <div class="container-fluid py-4">
+                    <!-- Page Header -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="page-title mb-1">
+                                <i class="bi bi-table me-2 text-primary"></i>Hindrance Records
+                            </h2>
+                            <p class="text-muted mb-0">View, manage, and export all hindrance records</p>
+                        </div>
+                        <div class="d-flex gap-2 mt-2 mt-md-0">
+                            <button class="btn btn-outline-secondary" id="btnToggleFilters">
+                                <i class="bi bi-funnel me-1"></i>Filters
+                            </button>
+                            <button class="btn btn-primary" id="btnCreateHindrance">
+                                <i class="bi bi-plus-lg me-1"></i>New Hindrance
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Filters Panel -->
+                    <div class="card mb-4 collapse" id="filtersPanel">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-funnel me-2"></i>Advanced Filters</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="advancedFiltersForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6 col-lg-3">
+                                        <label class="form-label">Date Range</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" id="filterDateFrom" placeholder="From">
+                                            <span class="input-group-text">to</span>
+                                            <input type="date" class="form-control" id="filterDateTo" placeholder="To">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select" id="filterStatus" multiple>
+                                            <option value="Active">Active</option>
+                                            <option value="Resolved">Resolved</option>
+                                            <option value="Overdue">Overdue</option>
+                                            <option value="Pending Approval">Pending Approval</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <label class="form-label">Responsible Party</label>
+                                        <select class="form-select" id="filterResponsibility">
+                                            <option value="">All</option>
+                                            <option value="Contractor">Contractor</option>
+                                            <option value="Client/Consultant">Client/Consultant</option>
+                                            <option value="Third Party/External">Third Party/External</option>
+                                            <option value="Force Majeure">Force Majeure</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <label class="form-label">Severity Level</label>
+                                        <select class="form-select" id="filterSeverity">
+                                            <option value="">All</option>
+                                            <option value="Critical">Critical</option>
+                                            <option value="High">High</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Low">Low</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label class="form-label">Work Phase</label>
+                                        <select class="form-select" id="filterWorkPhase" multiple>
+                                            <option value="Foundation & Excavation">Foundation & Excavation</option>
+                                            <option value="Structural Frame">Structural Frame</option>
+                                            <option value="Reinforcement & Concrete">Reinforcement & Concrete</option>
+                                            <option value="Masonry & External">Masonry & External</option>
+                                            <option value="MEP">MEP</option>
+                                            <option value="Architectural Finishing">Architectural Finishing</option>
+                                            <option value="Curtain Wall/Glazing">Curtain Wall/Glazing</option>
+                                            <option value="Interior Fit-out">Interior Fit-out</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-lg-4">
+                                        <label class="form-label">Nature of Hindrance</label>
+                                        <select class="form-select" id="filterNature">
+                                            <option value="">All</option>
+                                            <option value="Raw Material Unavailability">Raw Material Unavailability</option>
+                                            <option value="Labour Shortage">Labour Shortage</option>
+                                            <option value="Equipment Breakdown">Equipment Breakdown/Non-availability</option>
+                                            <option value="Weather/External Conditions">Weather/External Conditions</option>
+                                            <option value="Design Clarification Pending">Design Clarification Pending</option>
+                                            <option value="Inspection/Approval Pending">Inspection/Approval Pending</option>
+                                            <option value="Utility Connection Issues">Utility Connection Issues</option>
+                                            <option value="Access Route Issues">Access Route Issues</option>
+                                            <option value="Safety/Compliance Hold">Safety/Compliance Hold</option>
+                                            <option value="Third-Party Dependency">Third-Party Dependency</option>
+                                            <option value="Contractual/Payment Issues">Contractual/Payment Issues</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 col-lg-4 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary me-2">
+                                            <i class="bi bi-search me-1"></i>Apply Filters
+                                        </button>
+                                        <button type="reset" class="btn btn-outline-secondary" id="btnClearFilters">
+                                            <i class="bi bi-x-circle me-1"></i>Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Records Table -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="btnExportCSV">
+                                    <i class="bi bi-filetype-csv me-1"></i>CSV
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="btnExportExcel">
+                                    <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="btnExportPDF">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                                </button>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnColumnVisibility">
+                                    <i class="bi bi-layout-three-columns me-1"></i>Columns
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnPrintTable">
+                                    <i class="bi bi-printer me-1"></i>Print
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table id="hindranceTable" class="table table-striped table-hover w-100">
+                                <thead>
+                                    <tr>
+                                        <th>SR No.</th>
+                                        <th>Date</th>
+                                        <th>Nature</th>
+                                        <th>Work Affected</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Total Days</th>
+                                        <th>Status</th>
+                                        <th>Responsible</th>
+                                        <th>Severity</th>
+                                        <th>Days N/A</th>
+                                        <th>Remarks</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- DataTable will populate this -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Page -->
+            <section id="pageReports" class="page-section">
+                <div class="container-fluid py-4">
+                    <!-- Page Header -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="page-title mb-1">
+                                <i class="bi bi-file-earmark-bar-graph me-2 text-primary"></i>Reports & Analytics
+                            </h2>
+                            <p class="text-muted mb-0">Generate and export detailed reports</p>
+                        </div>
+                    </div>
+
+                    <!-- Report Type Selection -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card report-type-card h-100" data-report="daily">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-calendar-day report-icon text-primary"></i>
+                                    <h5 class="mt-3">Daily Report</h5>
+                                    <p class="text-muted small mb-0">Today's hindrances summary</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card report-type-card h-100" data-report="weekly">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-calendar-week report-icon text-success"></i>
+                                    <h5 class="mt-3">Weekly Summary</h5>
+                                    <p class="text-muted small mb-0">7-day analysis report</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card report-type-card h-100" data-report="monthly">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-calendar-month report-icon text-warning"></i>
+                                    <h5 class="mt-3">Monthly Analysis</h5>
+                                    <p class="text-muted small mb-0">30-day trend analysis</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card report-type-card h-100" data-report="delay">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-clock-history report-icon text-danger"></i>
+                                    <h5 class="mt-3">Delay Impact</h5>
+                                    <p class="text-muted small mb-0">Delay attribution analysis</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Configuration -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="bi bi-sliders me-2"></i>Report Configuration</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="reportConfigForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6 col-lg-3">
+                                        <label class="form-label">Report Type</label>
+                                        <select class="form-select" id="reportType">
+                                            <option value="daily">Daily Report</option>
+                                            <option value="weekly">Weekly Summary</option>
+                                            <option value="monthly">Monthly Analysis</option>
+                                            <option value="delay">Delay Impact Report</option>
+                                            <option value="custom">Custom Report</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <label class="form-label">Date Range</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" id="reportDateFrom">
+                                            <span class="input-group-text">to</span>
+                                            <input type="date" class="form-control" id="reportDateTo">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <label class="form-label">Work Phase Filter</label>
+                                        <select class="form-select" id="reportWorkPhase">
+                                            <option value="">All Phases</option>
+                                            <option value="Foundation & Excavation">Foundation & Excavation</option>
+                                            <option value="Structural Frame">Structural Frame</option>
+                                            <option value="Reinforcement & Concrete">Reinforcement & Concrete</option>
+                                            <option value="Masonry & External">Masonry & External</option>
+                                            <option value="MEP">MEP</option>
+                                            <option value="Architectural Finishing">Architectural Finishing</option>
+                                            <option value="Curtain Wall/Glazing">Curtain Wall/Glazing</option>
+                                            <option value="Interior Fit-out">Interior Fit-out</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="bi bi-file-earmark-text me-1"></i>Generate Report
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Report Output -->
+                    <div class="card" id="reportOutput">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0" id="reportTitle">
+                                <i class="bi bi-file-text me-2"></i>Report Preview
+                            </h5>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-primary btn-sm" id="btnDownloadReportPDF">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" id="btnDownloadReportExcel">
+                                    <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" id="btnPrintReport">
+                                    <i class="bi bi-printer me-1"></i>Print
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body" id="reportContent">
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-file-earmark-bar-graph display-1"></i>
+                                <p class="mt-3">Select a report type and click "Generate Report" to view</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="pageSettings" class="page-section">
+                <div class="container-fluid py-4">
+                    <!-- Page Header -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="page-title mb-1">
+                                <i class="bi bi-gear me-2 text-primary"></i>Settings
+                            </h2>
+                            <p class="text-muted mb-0">Configure project details and system settings</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Project Details -->
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-building me-2"></i>Project Details
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="projectDetailsForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Project Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="settingProjectName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Location</label>
+                                            <input type="text" class="form-control" id="settingLocation">
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Contract Agreement No.</label>
+                                                <input type="text" class="form-control" id="settingContractNo">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Agreement Date</label>
+                                                <input type="date" class="form-control" id="settingAgreementDate">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Contractor/Firm Name</label>
+                                            <input type="text" class="form-control" id="settingContractorName">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Client/Consultant Name</label>
+                                            <input type="text" class="form-control" id="settingClientName">
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Date of Commencement</label>
+                                                <input type="date" class="form-control" id="settingCommencementDate">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Stipulated Completion</label>
+                                                <input type="date" class="form-control" id="settingCompletionDate">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Total Contract Amount</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">&#8377;</span>
+                                                <input type="number" class="form-control" id="settingContractAmount" placeholder="0">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-lg me-1"></i>Save Project Details
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Configuration -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-sliders me-2"></i>System Configuration
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="systemConfigForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">SLA Threshold (Days)</label>
+                                            <input type="number" class="form-control" id="settingSLADays" value="5" min="1" max="30">
+                                            <small class="text-muted">Hindrances exceeding this will be marked overdue</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Approvers List</label>
+                                            <div id="approversList" class="mb-2"></div>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="newApproverName" placeholder="Add approver name">
+                                                <button class="btn btn-outline-primary" type="button" id="btnAddApprover">
+                                                    <i class="bi bi-plus-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Theme</label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="settingDarkMode">
+                                                <label class="form-check-label" for="settingDarkMode">Enable Dark Mode</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Auto-Backup</label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="settingAutoBackup" checked>
+                                                <label class="form-check-label" for="settingAutoBackup">Enable daily auto-backup</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-lg me-1"></i>Save Configuration
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Data Management -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-database me-2"></i>Data Management
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary" id="btnBackupData">
+                                            <i class="bi bi-download me-2"></i>Backup All Data (JSON)
+                                        </button>
+                                        <button class="btn btn-outline-primary" id="btnImportData">
+                                            <i class="bi bi-upload me-2"></i>Import Data
+                                        </button>
+                                        <input type="file" id="importDataFile" accept=".json" class="d-none">
+                                        <button class="btn btn-outline-success" id="btnLoadSampleData">
+                                            <i class="bi bi-file-earmark-arrow-down me-2"></i>Load Sample Data
+                                        </button>
+                                        <button class="btn btn-outline-danger" id="btnClearAllData">
+                                            <i class="bi bi-trash me-2"></i>Clear All Records
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Management -->
+                        <div class="col-12" id="userManagementSection">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-people me-2"></i>User Management
+                                    </h5>
+                                    <button class="btn btn-primary btn-sm" id="btnAddUser">
+                                        <i class="bi bi-person-plus me-1"></i>Add User
+                                    </button>
+                                </div>
+                                <div class="card-body table-responsive">
+                                    <table class="table table-hover" id="usersTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Full Name</th>
+                                                <th>Role</th>
+                                                <th>Status</th>
+                                                <th>Last Login</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersTableBody">
+                                            <!-- Users will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-nav d-lg-none">
+            <a href="#" class="mobile-nav-item active" data-page="dashboard">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="mobile-nav-item" data-page="records">
+                <i class="bi bi-table"></i>
+                <span>Records</span>
+            </a>
+            <a href="#" class="mobile-nav-item" data-page="reports">
+                <i class="bi bi-bar-chart"></i>
+                <span>Reports</span>
+            </a>
+            <a href="#" class="mobile-nav-item" data-page="settings">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <!-- Floating Action Button (Mobile) -->
+        <button class="fab d-lg-none" id="fabCreateHindrance" title="Create New Hindrance">
+            <i class="bi bi-plus-lg"></i>
+        </button>
+    </div>
+
+    <!-- Hindrance Form Modal -->
+    <div class="modal fade" id="hindranceModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="hindranceModalTitle">
+                        <i class="bi bi-plus-circle me-2"></i>Register New Hindrance
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="hindranceForm" novalidate>
+                        <input type="hidden" id="hindranceId">
+                        
+                        <!-- Basic Information -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Basic Information</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4 col-lg-2">
+                                        <label class="form-label">SR No.</label>
+                                        <input type="text" class="form-control" id="formSrNo" readonly>
+                                    </div>
+                                    <div class="col-md-4 col-lg-3">
+                                        <label class="form-label">Date of Occurrence <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="formDateOccurrence" required>
+                                    </div>
+                                    <div class="col-md-4 col-lg-3">
+                                        <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="formStartDate" required>
+                                    </div>
+                                    <div class="col-md-4 col-lg-4">
+                                        <label class="form-label">Nature of Hindrance <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="formNature" required>
+                                            <option value="">Select Nature</option>
+                                            <option value="Raw Material Unavailability">Raw Material Unavailability</option>
+                                            <option value="Labour Shortage">Labour Shortage</option>
+                                            <option value="Equipment Breakdown">Equipment Breakdown/Non-availability</option>
+                                            <option value="Weather/External Conditions">Weather/External Conditions</option>
+                                            <option value="Design Clarification Pending">Design Clarification Pending</option>
+                                            <option value="Inspection/Approval Pending">Inspection/Approval Pending</option>
+                                            <option value="Utility Connection Issues">Utility Connection Issues</option>
+                                            <option value="Access Route Issues">Access Route Issues</option>
+                                            <option value="Safety/Compliance Hold">Safety/Compliance Hold</option>
+                                            <option value="Third-Party Dependency">Third-Party Dependency</option>
+                                            <option value="Contractual/Payment Issues">Contractual/Payment Issues</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12" id="formNatureOtherContainer" style="display: none;">
+                                        <label class="form-label">Specify Other Nature <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="formNatureOther" placeholder="Describe the hindrance nature">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label">Work Affected <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="formWorkAffected" multiple required>
+                                            <option value="Foundation & Excavation">Foundation & Excavation</option>
+                                            <option value="Structural Frame">Structural Frame (Columns, Beams, Slabs)</option>
+                                            <option value="Reinforcement & Concrete">Reinforcement & Concrete Works</option>
+                                            <option value="Masonry & External">Masonry & External Works</option>
+                                            <option value="MEP">MEP (Mechanical, Electrical, Plumbing)</option>
+                                            <option value="Architectural Finishing">Architectural Finishing</option>
+                                            <option value="Curtain Wall/Glazing">Curtain Wall/Glazing</option>
+                                            <option value="Interior Fit-out">Interior Fit-out</option>
+                                        </select>
+                                        <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="bi bi-text-paragraph me-2"></i>Description</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Description of Hindrance <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="formDescription" rows="4" maxlength="500" required placeholder="Describe the hindrance in detail..."></textarea>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">Provide clear details about the hindrance</small>
+                                        <small class="text-muted"><span id="descriptionCharCount">0</span>/500</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Impact Assessment -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Impact Assessment</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Responsible Party <span class="text-danger">*</span></label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="formResponsibility" id="respContractor" value="Contractor" required>
+                                                <label class="form-check-label" for="respContractor">Contractor</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="formResponsibility" id="respClient" value="Client/Consultant">
+                                                <label class="form-check-label" for="respClient">Client/Consultant</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="formResponsibility" id="respThirdParty" value="Third Party/External">
+                                                <label class="form-check-label" for="respThirdParty">Third Party</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="formResponsibility" id="respForceMajeure" value="Force Majeure">
+                                                <label class="form-check-label" for="respForceMajeure">Force Majeure</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Severity Level <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="formSeverity" required>
+                                            <option value="">Select Severity</option>
+                                            <option value="Critical">Critical</option>
+                                            <option value="High">High</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Low">Low</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Estimated Delay (Days) <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="formEstimatedDelay" min="0" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Affected Workforce</label>
+                                        <input type="number" class="form-control" id="formAffectedWorkforce" min="0" placeholder="No. of workers">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Cost Impact (Optional)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">&#8377;</span>
+                                            <input type="number" class="form-control" id="formCostImpact" min="0" placeholder="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Corrective Measures -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="bi bi-tools me-2"></i>Corrective Measures & Resolution</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Corrective Measures Taken/Planned</label>
+                                        <textarea class="form-control" id="formCorrectiveMeasures" rows="3" maxlength="500" placeholder="Describe actions taken or planned to resolve the hindrance..."></textarea>
+                                        <div class="text-end">
+                                            <small class="text-muted"><span id="correctiveCharCount">0</span>/500</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Date of Removal/Resolution</label>
+                                        <input type="date" class="form-control" id="formRemovalDate">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Actual Days Taken</label>
+                                        <input type="number" class="form-control" id="formActualDays" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Days Attributable to Contractor</label>
+                                        <input type="number" class="form-control" id="formDaysAttributable" min="0">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Days Not Attributable</label>
+                                        <input type="number" class="form-control" id="formDaysNotAttributable" readonly>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label">Remarks & Supporting Notes</label>
+                                        <textarea class="form-control" id="formRemarks" rows="2" maxlength="300" placeholder="Additional notes or remarks..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attachments -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="bi bi-paperclip me-2"></i>Attachments</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Upload Files (Images, PDFs, Documents)</label>
+                                    <input type="file" class="form-control" id="formAttachments" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                                    <small class="text-muted">Max 5MB per file. Supported: JPG, PNG, PDF, DOC, DOCX</small>
+                                </div>
+                                <div id="attachmentPreview" class="row g-2"></div>
+                                <div id="existingAttachments" class="row g-2 mt-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Sign-off -->
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="bi bi-pen me-2"></i>Sign-off & Approval</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Approver Name</label>
+                                        <select class="form-select" id="formApprover">
+                                            <option value="">Select Approver</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Approval Date</label>
+                                        <input type="date" class="form-control" id="formApprovalDate">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select" id="formStatus">
+                                            <option value="Active">Active</option>
+                                            <option value="Pending Approval">Pending Approval</option>
+                                            <option value="Resolved">Resolved</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="me-auto">
+                        <small class="text-muted" id="formAutoSaveStatus"></small>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnSaveHindrance">
+                        <i class="bi bi-check-lg me-1"></i>Save Hindrance
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div class="modal fade" id="viewDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye me-2"></i>Hindrance Details - <span id="viewSrNo"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="viewDetailsContent">
+                    <!-- Content populated by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" id="btnViewEdit">
+                        <i class="bi bi-pencil me-1"></i>Edit
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="btnViewDownloadPDF">
+                        <i class="bi bi-file-pdf me-1"></i>Download PDF
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle">
+                        <i class="bi bi-person-plus me-2"></i>Add New User
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="editUserId">
+                        <div class="mb-3">
+                            <label class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="userUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="userFullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="userPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select" id="userRole" required>
+                                <option value="">Select Role</option>
+                                <option value="admin">Admin</option>
+                                <option value="site_incharge">Site In-Charge</option>
+                                <option value="supervisor">Supervisor</option>
+                                <option value="consultant">Consultant</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="userActive" checked>
+                                <label class="form-check-label" for="userActive">Active</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveUser">Save User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Visibility Modal -->
+    <div class="modal fade" id="columnVisibilityModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Column Visibility</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="columnToggles"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Container -->
+    <div id="printContainer" class="print-only"></div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Application Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/modules/utils.js"></script>
+    <script src="js/modules/storage.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/dashboard.js"></script>
+    <script src="js/modules/records.js"></script>
+    <script src="js/modules/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

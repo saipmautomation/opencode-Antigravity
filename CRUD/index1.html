@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional CRUD Application with DataTables, Bootstrap 5, and SweetAlert2">
+    <title>CRUD Manager Pro | Employee Management System</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@2.1.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/datatables.net-buttons-bs5@3.1.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/datatables.net-responsive-bs5@3.0.3/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/datatables.net-select-bs5@2.1.0/css/select.bootstrap5.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --danger-gradient: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            --warning-gradient: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2%, 2%) rotate(1deg); }
+            50% { transform: translate(0, 4%) rotate(0deg); }
+            75% { transform: translate(-2%, 2%) rotate(-1deg); }
+        }
+
+        /* Header Styles */
+        .app-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.25rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Main Container */
+        .main-container {
+            padding: 2rem 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-purple);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .stat-card.purple::before { background: var(--primary-gradient); }
+        .stat-card.blue::before { background: var(--info-gradient); }
+        .stat-card.green::before { background: var(--success-gradient); }
+        .stat-card.orange::before { background: var(--warning-gradient); }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card.purple .stat-icon { background: var(--primary-gradient); }
+        .stat-card.blue .stat-icon { background: var(--info-gradient); }
+        .stat-card.green .stat-icon { background: var(--success-gradient); }
+        .stat-card.orange .stat-icon { background: var(--warning-gradient); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .stat-change.positive {
+            background: rgba(56, 239, 125, 0.15);
+            color: #38ef7d;
+        }
+
+        .stat-change.negative {
+            background: rgba(244, 92, 67, 0.15);
+            color: #f45c43;
+        }
+
+        /* Data Table Card */
+        .table-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .card-title-wrapper h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title-wrapper p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* Button Styles */
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .btn-action.btn-view {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+
+        .btn-action.btn-edit {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8b5cf6;
+        }
+
+        .btn-action.btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-action.btn-view:hover { background: rgba(59, 130, 246, 0.25); color: #3b82f6; }
+        .btn-action.btn-edit:hover { background: rgba(139, 92, 246, 0.25); color: #8b5cf6; }
+        .btn-action.btn-delete:hover { background: rgba(239, 68, 68, 0.25); color: #ef4444; }
+
+        /* DataTable Customization */
+        .dataTables_wrapper {
+            padding: 0;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            padding: 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            outline: none;
+        }
+
+        table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0;
+            width: 100% !important;
+        }
+
+        table.dataTable thead th {
+            background: rgba(139, 92, 246, 0.1);
+            border-bottom: 2px solid var(--accent-purple) !important;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem 1.25rem !important;
+            white-space: nowrap;
+        }
+
+        table.dataTable tbody td {
+            padding: 1rem 1.25rem !important;
+            border-bottom: 1px solid var(--glass-border);
+            vertical-align: middle;
+            font-size: 0.9375rem;
+        }
+
+        table.dataTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        table.dataTable tbody tr:hover {
+            background: rgba(139, 92, 246, 0.05) !important;
+        }
+
+        table.dataTable tbody tr.selected {
+            background: rgba(139, 92, 246, 0.15) !important;
+        }
+
+        /* Pagination */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border: none !important;
+            background: transparent !important;
+            color: var(--text-secondary) !important;
+            border-radius: 8px !important;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.125rem;
+            transition: all 0.2s ease;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: rgba(139, 92, 246, 0.15) !important;
+            color: var(--accent-purple) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--primary-gradient) !important;
+            color: white !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+            opacity: 0.4;
+        }
+
+        /* DataTable Buttons */
+        .dt-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .dt-buttons .btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dt-buttons .btn:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .dt-buttons .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 0.375rem 0.875rem;
+            border-radius: 50px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-badge.active {
+            background: rgba(56, 239, 125, 0.15);
+            color: #38ef7d;
+        }
+
+        .status-badge.inactive {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .status-badge.pending {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .avatar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar-info {
+            line-height: 1.3;
+        }
+
+        .avatar-name {
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        .avatar-email {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 1.25rem 1.5rem;
+        }
+
+        /* Form Styles */
+        .form-floating > .form-control,
+        .form-floating > .form-select {
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            height: calc(3.5rem + 2px);
+            padding: 1rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-floating > .form-control:focus,
+        .form-floating > .form-select:focus {
+            background: var(--dark-bg);
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            color: var(--text-primary);
+        }
+
+        .form-floating > label {
+            color: var(--text-secondary);
+            padding: 1rem;
+        }
+
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-select ~ label {
+            color: var(--accent-purple);
+        }
+
+        .form-select option {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .btn-modal-primary {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modal-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-modal-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-modal-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        /* Department Badge */
+        .dept-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .dept-badge.engineering { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .dept-badge.design { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+        .dept-badge.marketing { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .dept-badge.sales { background: rgba(249, 115, 22, 0.15); color: #f97316; }
+        .dept-badge.hr { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+        .dept-badge.finance { background: rgba(20, 184, 166, 0.15); color: #14b8a6; }
+
+        /* Action Buttons Container */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* SweetAlert2 Custom Theme */
+        .swal2-popup {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px !important;
+        }
+
+        .swal2-title {
+            color: var(--text-primary) !important;
+        }
+
+        .swal2-html-container {
+            color: var(--text-secondary) !important;
+        }
+
+        .swal2-confirm {
+            background: var(--primary-gradient) !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            padding: 0.75rem 2rem !important;
+        }
+
+        .swal2-cancel {
+            background: transparent !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-secondary) !important;
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+        }
+
+        .swal2-cancel:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .card-header-custom {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-card {
+                padding: 1rem;
+                border-radius: 16px;
+            }
+
+            .dt-buttons {
+                justify-content: center;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        /* Fade In Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="app-logo">
+                    <div class="logo-icon">
+                        <i class="bi bi-database-fill-gear"></i>
+                    </div>
+                    <div>
+                        <div class="logo-text">CRUD Manager</div>
+                        <div class="logo-subtitle">Employee Management System</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-secondary small">
+                        <i class="bi bi-clock me-1"></i>
+                        <span id="currentTime"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container container">
+        <!-- Stats Cards -->
+        <div class="stats-grid fade-in">
+            <div class="stat-card purple">
+                <div class="stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-value" id="totalEmployees">0</div>
+                <div class="stat-label">Total Employees</div>
+                <span class="stat-change positive">+12%</span>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="stat-value" id="activeEmployees">0</div>
+                <div class="stat-label">Active Employees</div>
+                <span class="stat-change positive">+8%</span>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div class="stat-value" id="totalDepts">6</div>
+                <div class="stat-label">Departments</div>
+                <span class="stat-change positive">+2</span>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stat-value" id="pendingEmployees">0</div>
+                <div class="stat-label">Pending Review</div>
+                <span class="stat-change negative">-3%</span>
+            </div>
+        </div>
+
+        <!-- Data Table Card -->
+        <div class="table-card fade-in" style="animation-delay: 0.2s;">
+            <div class="card-header-custom">
+                <div class="card-title-wrapper">
+                    <h2>
+                        <i class="bi bi-table"></i>
+                        Employee Directory
+                    </h2>
+                    <p>Manage and organize your team efficiently</p>
+                </div>
+                <button class="btn btn-gradient" id="btnAddNew">
+                    <i class="bi bi-plus-lg"></i>
+                    Add Employee
+                </button>
+            </div>
+
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="employeeTable" class="table table-hover w-100">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal fade" id="employeeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-plus-fill"></i>
+                        <span id="modalTitle">Add New Employee</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="employeeForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="employeeId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
+                                    <label for="firstName"><i class="bi bi-person me-2"></i>First Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
+                                    <label for="lastName"><i class="bi bi-person me-2"></i>Last Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" placeholder="Email" required>
+                                    <label for="email"><i class="bi bi-envelope me-2"></i>Email Address</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="phone" placeholder="Phone" required>
+                                    <label for="phone"><i class="bi bi-telephone me-2"></i>Phone Number</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="department" required>
+                                        <option value="">Select Department</option>
+                                        <option value="Engineering">Engineering</option>
+                                        <option value="Design">Design</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="Sales">Sales</option>
+                                        <option value="HR">Human Resources</option>
+                                        <option value="Finance">Finance</option>
+                                    </select>
+                                    <label for="department"><i class="bi bi-building me-2"></i>Department</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="position" placeholder="Position" required>
+                                    <label for="position"><i class="bi bi-briefcase me-2"></i>Position</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="status" required>
+                                        <option value="">Select Status</option>
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                        <option value="Pending">Pending</option>
+                                    </select>
+                                    <label for="status"><i class="bi bi-toggle-on me-2"></i>Status</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="joinDate" required>
+                                    <label for="joinDate"><i class="bi bi-calendar-event me-2"></i>Join Date</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-modal-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-modal-primary">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Save Employee
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-badge"></i>
+                        <span>Employee Details</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="viewContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modal-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    
+    <!-- Bootstrap 5 Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables -->
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net@2.1.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@2.1.8/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@3.1.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons-bs5@3.1.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.12/build/pdfmake.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.12/build/vfs_fonts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@3.1.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@3.1.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@3.1.2/js/buttons.colVis.min.js"></script>
+    
+    <!-- DataTables Responsive -->
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-responsive@3.0.3/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-responsive-bs5@3.0.3/js/responsive.bootstrap5.min.js"></script>
+    
+    <!-- DataTables Select -->
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-select@2.1.0/js/dataTables.select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-select-bs5@2.1.0/js/select.bootstrap5.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        // ===== GLOBAL VARIABLES =====
+        let employees = [];
+        let dataTable = null;
+        const STORAGE_KEY = 'crudAppEmployees';
+
+        // Avatar colors
+        const avatarColors = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+            'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)'
+        ];
+
+        // ===== UTILITY FUNCTIONS =====
+        function generateId() {
+            return 'EMP' + Date.now().toString(36).toUpperCase();
+        }
+
+        function getAvatarColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return avatarColors[Math.abs(hash) % avatarColors.length];
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        function getDeptClass(dept) {
+            const classes = {
+                'Engineering': 'engineering',
+                'Design': 'design',
+                'Marketing': 'marketing',
+                'Sales': 'sales',
+                'HR': 'hr',
+                'Human Resources': 'hr',
+                'Finance': 'finance'
+            };
+            return classes[dept] || 'engineering';
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'Active': 'active',
+                'Inactive': 'inactive',
+                'Pending': 'pending'
+            };
+            return classes[status] || 'pending';
+        }
+
+        // ===== LOCAL STORAGE =====
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(employees));
+        }
+
+        function loadFromStorage() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                employees = JSON.parse(data);
+            } else {
+                // Load sample data
+                employees = getSampleData();
+                saveToStorage();
+            }
+        }
+
+        function getSampleData() {
+            return [
+                {
+                    id: 'EMP001',
+                    firstName: 'John',
+                    lastName: 'Anderson',
+                    email: 'john.anderson@company.com',
+                    phone: '+1 (555) 123-4567',
+                    department: 'Engineering',
+                    position: 'Senior Developer',
+                    status: 'Active',
+                    joinDate: '2022-03-15'
+                },
+                {
+                    id: 'EMP002',
+                    firstName: 'Sarah',
+                    lastName: 'Mitchell',
+                    email: 'sarah.mitchell@company.com',
+                    phone: '+1 (555) 234-5678',
+                    department: 'Design',
+                    position: 'UI/UX Designer',
+                    status: 'Active',
+                    joinDate: '2023-01-10'
+                },
+                {
+                    id: 'EMP003',
+                    firstName: 'Michael',
+                    lastName: 'Chen',
+                    email: 'michael.chen@company.com',
+                    phone: '+1 (555) 345-6789',
+                    department: 'Marketing',
+                    position: 'Marketing Manager',
+                    status: 'Active',
+                    joinDate: '2021-08-22'
+                },
+                {
+                    id: 'EMP004',
+                    firstName: 'Emily',
+                    lastName: 'Rodriguez',
+                    email: 'emily.rodriguez@company.com',
+                    phone: '+1 (555) 456-7890',
+                    department: 'Sales',
+                    position: 'Sales Representative',
+                    status: 'Pending',
+                    joinDate: '2024-01-05'
+                },
+                {
+                    id: 'EMP005',
+                    firstName: 'David',
+                    lastName: 'Thompson',
+                    email: 'david.thompson@company.com',
+                    phone: '+1 (555) 567-8901',
+                    department: 'HR',
+                    position: 'HR Specialist',
+                    status: 'Active',
+                    joinDate: '2022-11-30'
+                },
+                {
+                    id: 'EMP006',
+                    firstName: 'Jessica',
+                    lastName: 'Williams',
+                    email: 'jessica.williams@company.com',
+                    phone: '+1 (555) 678-9012',
+                    department: 'Finance',
+                    position: 'Financial Analyst',
+                    status: 'Active',
+                    joinDate: '2023-06-18'
+                },
+                {
+                    id: 'EMP007',
+                    firstName: 'Robert',
+                    lastName: 'Garcia',
+                    email: 'robert.garcia@company.com',
+                    phone: '+1 (555) 789-0123',
+                    department: 'Engineering',
+                    position: 'DevOps Engineer',
+                    status: 'Active',
+                    joinDate: '2022-09-12'
+                },
+                {
+                    id: 'EMP008',
+                    firstName: 'Amanda',
+                    lastName: 'Lee',
+                    email: 'amanda.lee@company.com',
+                    phone: '+1 (555) 890-1234',
+                    department: 'Design',
+                    position: 'Graphic Designer',
+                    status: 'Inactive',
+                    joinDate: '2021-04-25'
+                }
+            ];
+        }
+
+        // ===== UPDATE STATS =====
+        function updateStats() {
+            const total = employees.length;
+            const active = employees.filter(e => e.status === 'Active').length;
+            const pending = employees.filter(e => e.status === 'Pending').length;
+
+            $('#totalEmployees').text(total);
+            $('#activeEmployees').text(active);
+            $('#pendingEmployees').text(pending);
+        }
+
+        // ===== DATATABLE INITIALIZATION =====
+        function initDataTable() {
+            dataTable = $('#employeeTable').DataTable({
+                data: employees,
+                columns: [
+                    { 
+                        data: 'id',
+                        render: function(data) {
+                            return `<span class="text-secondary fw-medium">${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: null,
+                        render: function(data) {
+                            const fullName = `${data.firstName} ${data.lastName}`;
+                            const initials = `${data.firstName.charAt(0)}${data.lastName.charAt(0)}`;
+                            const color = getAvatarColor(fullName);
+                            return `
+                                <div class="avatar-group">
+                                    <div class="avatar" style="background: ${color}">${initials}</div>
+                                    <div class="avatar-info">
+                                        <div class="avatar-name">${fullName}</div>
+                                        <div class="avatar-email">${data.email}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    },
+                    { 
+                        data: 'department',
+                        render: function(data) {
+                            return `<span class="dept-badge ${getDeptClass(data)}">${data}</span>`;
+                        }
+                    },
+                    { data: 'position' },
+                    { data: 'phone' },
+                    { 
+                        data: 'status',
+                        render: function(data) {
+                            return `<span class="status-badge ${getStatusClass(data)}">${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: 'joinDate',
+                        render: function(data) {
+                            return formatDate(data);
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function(data) {
+                            return `
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view" onclick="viewEmployee('${data.id}')" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" onclick="editEmployee('${data.id}')" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" onclick="deleteEmployee('${data.id}')" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="bi bi-clipboard me-1"></i> Copy',
+                        className: 'btn',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="bi bi-filetype-csv me-1"></i> CSV',
+                        className: 'btn',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="bi bi-file-earmark-excel me-1"></i> Excel',
+                        className: 'btn',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="bi bi-file-earmark-pdf me-1"></i> PDF',
+                        className: 'btn',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="bi bi-printer me-1"></i> Print',
+                        className: 'btn',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    },
+                    {
+                        extend: 'colvis',
+                        text: '<i class="bi bi-columns-gap me-1"></i> Columns',
+                        className: 'btn'
+                    }
+                ],
+                responsive: true,
+                select: true,
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                language: {
+                    search: '',
+                    searchPlaceholder: 'Search employees...',
+                    lengthMenu: 'Show _MENU_ entries',
+                    info: 'Showing _START_ to _END_ of _TOTAL_ employees',
+                    infoEmpty: 'No employees found',
+                    infoFiltered: '(filtered from _MAX_ total)',
+                    paginate: {
+                        first: '<i class="bi bi-chevron-double-left"></i>',
+                        previous: '<i class="bi bi-chevron-left"></i>',
+                        next: '<i class="bi bi-chevron-right"></i>',
+                        last: '<i class="bi bi-chevron-double-right"></i>'
+                    }
+                },
+                order: [[0, 'asc']]
+            });
+        }
+
+        function refreshTable() {
+            dataTable.clear();
+            dataTable.rows.add(employees);
+            dataTable.draw();
+            updateStats();
+        }
+
+        // ===== CRUD OPERATIONS =====
+        
+        // CREATE / UPDATE
+        function saveEmployee(employeeData) {
+            if (employeeData.id) {
+                // Update existing
+                const index = employees.findIndex(e => e.id === employeeData.id);
+                if (index !== -1) {
+                    employees[index] = employeeData;
+                }
+            } else {
+                // Create new
+                employeeData.id = generateId();
+                employees.push(employeeData);
+            }
+            saveToStorage();
+            refreshTable();
+        }
+
+        // READ (View)
+        function viewEmployee(id) {
+            const employee = employees.find(e => e.id === id);
+            if (employee) {
+                const fullName = `${employee.firstName} ${employee.lastName}`;
+                const initials = `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`;
+                const color = getAvatarColor(fullName);
+                
+                const content = `
+                    <div class="text-center mb-4">
+                        <div class="avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem; background: ${color}">
+                            ${initials}
+                        </div>
+                        <h4 class="mb-1">${fullName}</h4>
+                        <span class="status-badge ${getStatusClass(employee.status)}">${employee.status}</span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="text-secondary small mb-1">Employee ID</div>
+                            <div class="fw-medium">${employee.id}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-secondary small mb-1">Department</div>
+                            <div><span class="dept-badge ${getDeptClass(employee.department)}">${employee.department}</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-secondary small mb-1">Position</div>
+                            <div class="fw-medium">${employee.position}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-secondary small mb-1">Join Date</div>
+                            <div class="fw-medium">${formatDate(employee.joinDate)}</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-secondary small mb-1">Email</div>
+                            <div class="fw-medium">${employee.email}</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-secondary small mb-1">Phone</div>
+                            <div class="fw-medium">${employee.phone}</div>
+                        </div>
+                    </div>
+                `;
+                
+                $('#viewContent').html(content);
+                new bootstrap.Modal('#viewModal').show();
+            }
+        }
+
+        // UPDATE (Edit)
+        function editEmployee(id) {
+            const employee = employees.find(e => e.id === id);
+            if (employee) {
+                $('#modalTitle').text('Edit Employee');
+                $('#employeeId').val(employee.id);
+                $('#firstName').val(employee.firstName);
+                $('#lastName').val(employee.lastName);
+                $('#email').val(employee.email);
+                $('#phone').val(employee.phone);
+                $('#department').val(employee.department);
+                $('#position').val(employee.position);
+                $('#status').val(employee.status);
+                $('#joinDate').val(employee.joinDate);
+                
+                new bootstrap.Modal('#employeeModal').show();
+            }
+        }
+
+        // DELETE
+        function deleteEmployee(id) {
+            const employee = employees.find(e => e.id === id);
+            
+            Swal.fire({
+                title: 'Delete Employee?',
+                html: `Are you sure you want to delete <strong>${employee.firstName} ${employee.lastName}</strong>?<br><small class="text-secondary">This action cannot be undone.</small>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#ef4444',
+                background: '#161b22',
+                color: '#e6edf3'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    employees = employees.filter(e => e.id !== id);
+                    saveToStorage();
+                    refreshTable();
+                    
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Employee has been deleted successfully.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#161b22',
+                        color: '#e6edf3'
+                    });
+                }
+            });
+        }
+
+        // Delete Selected
+        function deleteSelected() {
+            const selectedRows = dataTable.rows({ selected: true }).data().toArray();
+            
+            if (selectedRows.length === 0) {
+                Swal.fire({
+                    title: 'No Selection',
+                    text: 'Please select at least one employee to delete.',
+                    icon: 'info',
+                    background: '#161b22',
+                    color: '#e6edf3'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Delete Selected?',
+                html: `Are you sure you want to delete <strong>${selectedRows.length}</strong> selected employee(s)?<br><small class="text-secondary">This action cannot be undone.</small>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete all',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#ef4444',
+                background: '#161b22',
+                color: '#e6edf3'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const idsToDelete = selectedRows.map(row => row.id);
+                    employees = employees.filter(e => !idsToDelete.includes(e.id));
+                    saveToStorage();
+                    refreshTable();
+                    
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: `${selectedRows.length} employee(s) deleted successfully.`,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#161b22',
+                        color: '#e6edf3'
+                    });
+                }
+            });
+        }
+
+        // ===== FORM HANDLING =====
+        function resetForm() {
+            $('#employeeForm')[0].reset();
+            $('#employeeId').val('');
+            $('#modalTitle').text('Add New Employee');
+        }
+
+        // ===== UPDATE CLOCK =====
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit'
+            };
+            $('#currentTime').text(now.toLocaleDateString('en-US', options));
+        }
+
+        // ===== DOCUMENT READY =====
+        $(document).ready(function() {
+            // Hide loading overlay
+            setTimeout(() => {
+                $('#loadingOverlay').addClass('hidden');
+            }, 800);
+
+            // Initialize
+            loadFromStorage();
+            initDataTable();
+            updateStats();
+            updateClock();
+            setInterval(updateClock, 60000);
+
+            // Add New Button
+            $('#btnAddNew').on('click', function() {
+                resetForm();
+                new bootstrap.Modal('#employeeModal').show();
+            });
+
+            // Form Submit
+            $('#employeeForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const employeeData = {
+                    id: $('#employeeId').val() || null,
+                    firstName: $('#firstName').val().trim(),
+                    lastName: $('#lastName').val().trim(),
+                    email: $('#email').val().trim(),
+                    phone: $('#phone').val().trim(),
+                    department: $('#department').val(),
+                    position: $('#position').val().trim(),
+                    status: $('#status').val(),
+                    joinDate: $('#joinDate').val()
+                };
+
+                saveEmployee(employeeData);
+                bootstrap.Modal.getInstance('#employeeModal').hide();
+                
+                const isEdit = employeeData.id && employees.find(e => e.id === employeeData.id);
+                
+                Swal.fire({
+                    title: isEdit ? 'Updated!' : 'Created!',
+                    text: `Employee has been ${isEdit ? 'updated' : 'added'} successfully.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: '#161b22',
+                    color: '#e6edf3'
+                });
+            });
+
+            // Reset form on modal close
+            $('#employeeModal').on('hidden.bs.modal', function() {
+                resetForm();
+            });
+
+            // Add delete selected button after table buttons
+            setTimeout(() => {
+                $('.dt-buttons').append(`
+                    <button class="btn" onclick="deleteSelected()" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">
+                        <i class="bi bi-trash me-1"></i> Delete Selected
+                    </button>
+                `);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
